@@ -1,13 +1,5 @@
 import * as XLSX from 'xlsx';
-
-export type Transaction = {
-    date: string;
-    vendor: string;
-    amount: number;
-    type: string;
-    details?: string;
-    billedAmount: number;
-};
+import ITransaction from "@Interfaces/ITransaction";
 
 function excelDateToISO(serial: number): string {
     const utc_days = Math.floor(serial - 25569); // Excel date to Unix date
@@ -21,7 +13,7 @@ function formatDDMMYYToISO(dateStr: string): string {
     return `${fullYear}-${month}-${day}`;
 }
 
-function transformRawData(rawRows: any[]): Transaction[] {
+function transformRawData(rawRows: any[]): ITransaction[] {
     return rawRows
         .filter(row => row["בנק לאומי |"] && row["__EMPTY"])
         .map(row => {
@@ -47,7 +39,7 @@ function transformRawData(rawRows: any[]): Transaction[] {
         });
 }
 
-export async function parseExcelFile(file: File): Promise<Transaction[]> {
+export async function parseExcelFile(file: File): Promise<ITransaction[]> {
     const arrayBuffer = await file.arrayBuffer();
     const workbook = XLSX.read(arrayBuffer, { type: 'buffer' });
     const sheetName = workbook.SheetNames[0];
