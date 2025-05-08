@@ -15,7 +15,7 @@ function formatDDMMYYToISO(dateStr: string): string {
 
 function transformRawData(rawRows: any[]): ITransaction[] {
     return rawRows
-        .filter(row => row["בנק לאומי |"] && row["__EMPTY"])
+        .filter(row => row["בנק לאומי |"] && row["בנק לאומי |"] !== "תאריך העסקה" && row["__EMPTY"])
         .map(row => {
             const rawDate = row["בנק לאומי |"];
             let date: string;
