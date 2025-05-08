@@ -5,4 +5,5 @@ export default interface ITransaction {
   type: string;         // Transaction type, e.g., "עסקה רגילה"
   details?: string;     // Optional details or description
   billedAmount: number; // Final charged amount
+  category?: string;
 }

@@ -13,6 +13,7 @@ const TransactionsTableComponent: React.FC<Props> = ({ transactions }) => {
             <tr>
                 <th>תאריך</th>
                 <th>בית עסק</th>
+                <th>קטגוריה</th>
                 <th>סכום עסקה</th>
                 <th>סוג</th>
                 <th>פרטים</th>
@@ -24,6 +25,7 @@ const TransactionsTableComponent: React.FC<Props> = ({ transactions }) => {
                 <tr key={index}>
                     <td>{tx.date}</td>
                     <td>{tx.vendor}</td>
+                    <td>{tx.category}</td>
                     <td>{tx.amount}</td>
                     <td>{tx.type}</td>
                     <td>{tx.details}</td>
