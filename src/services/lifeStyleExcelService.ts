@@ -3,7 +3,7 @@ import * as XLSX from "xlsx";
 
 function transformRawData(rawRows: any[]): ITransaction[] {
     return rawRows
-        .filter(row => row["__EMPTY"] && row["__EMPTY"] !== "תאריך רכישה" && row["__EMPTY_2"])
+        .filter(row => row["__EMPTY"] && row["__EMPTY"] !== "תאריך רכישה" && row["__EMPTY_5"])
         .map(row => {
             return {
                 date: row["__EMPTY"] || "",
