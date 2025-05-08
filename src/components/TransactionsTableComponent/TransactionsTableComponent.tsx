@@ -1,13 +1,14 @@
 import React from 'react';
-import ITransaction from "@Interfaces/ITransaction";
+import './TransactionsTableComponent.css';
+import ITransaction from '@Interfaces/ITransaction';
 
-type Props = {
+interface Props {
     transactions: ITransaction[];
-};
+}
 
 const TransactionsTableComponent: React.FC<Props> = ({ transactions }) => {
     return (
-        <table>
+        <table className="transactions-table">
             <thead>
             <tr>
                 <th>תאריך</th>
