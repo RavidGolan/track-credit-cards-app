@@ -1,7 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import FileReaderComponent from "./components/FileReaderComponent";
+import TransactionViewerComponent from "./components/TransactionViewerComponent";
 
 function App() {
   return (
@@ -19,7 +19,7 @@ function App() {
         >
           Learn React
         </a>
-        <FileReaderComponent></FileReaderComponent>
+        <TransactionViewerComponent />
       </header>
     </div>
   );

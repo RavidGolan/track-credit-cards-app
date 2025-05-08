@@ -21,7 +21,8 @@
     "jsx": "react-jsx",
     "baseUrl": "src",
     "paths": {
-      "@Interfaces/*": ["common/interfaces/*"]
+      "@Interfaces/*": ["common/interfaces/*"],
+      "@Components/*": ["components/*"]
     }
   },
   "include": [
