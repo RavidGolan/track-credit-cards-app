@@ -1,36 +1,33 @@
 import * as XLSX from 'xlsx';
 
-/**
- * Reads an Excel file and returns its contents as JSON.
- * @param file - The Excel File object (from <input type="file" />)
- * @returns A promise that resolves with an array of JSON rows.
- */
-export const parseExcelFile = (
-    file: File
-): Promise<Record<string, any>[]> => {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-
-        reader.onload = (e: ProgressEvent<FileReader>) => {
-            try {
-                const data = new Uint8Array(e.target?.result as ArrayBuffer);
-                const workbook = XLSX.read(data, { type: 'array', cellDates: true });
-
-                const sheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[sheetName];
-
-                const jsonData = XLSX.utils.sheet_to_json<Record<string, any>>(worksheet);
-
-                resolve(jsonData);
-            } catch (error) {
-                reject(error);
-            }
-        };
-
-        reader.onerror = (err) => {
-            reject(err);
-        };
-
-        reader.readAsArrayBuffer(file);
-    });
+export type Transaction = {
+    date: string;
+    vendor: string;
+    amount: number;
+    type: string;
+    details?: string;
+    billedAmount: number;
 };
+
+function transformRawData(rawRows: any[]): Transaction[] {
+    return rawRows
+        .filter(row => typeof row["בנק לאומי |"] === "string" && row["__EMPTY"]) // filter valid rows
+        .map(row => ({
+            date: row["בנק לאומי |"],
+            vendor: row["__EMPTY"] || "",
+            amount: parseFloat(row["__EMPTY_1"]) || 0,
+            type: row["__EMPTY_2"] || "",
+            details: row["__EMPTY_3"] || "",
+            billedAmount: parseFloat(row["__EMPTY_4"]) || 0,
+        }));
+}
+
+export async function parseExcelFile(file: File): Promise<Transaction[]> {
+    const arrayBuffer = await file.arrayBuffer();
+    const workbook = XLSX.read(arrayBuffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    const rawData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+    return transformRawData(rawData);
+}
