@@ -4,13 +4,15 @@ import {Vendors} from "common/enums/Vendors";
 import Select from 'react-select';
 import IVendorService from "@Interfaces/IVendorService";
 import {VendorServices} from "services/VendorServices";
+import {CreditCards} from "../common/enums/CreditCards";
 
 interface FileReaderComponentProps {
+    creditCard: CreditCards,
+    vendor: Vendors,
     onData: (data: ITransaction[]) => void;
 }
 
-const FileReaderComponent: React.FC<FileReaderComponentProps> = ({ onData }) => {
-    const [selectedVendor, setSelectedVendor] = useState<Vendors | null>(null);
+const FileReaderComponent: React.FC<FileReaderComponentProps> = ({ creditCard, vendor, onData }) => {
     const vendorOptions = Object.entries(Vendors).map(([key, value]) => ({
         label: value,
         value: Vendors[key as keyof typeof Vendors],  // Ensure value is of type Vendors
@@ -19,16 +21,20 @@ const FileReaderComponent: React.FC<FileReaderComponentProps> = ({ onData }) => 
 
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
-        if (!file || !selectedVendor) return;
+        if (!file) return;
 
-        const service: IVendorService | undefined = VendorServices[selectedVendor];
+        const service: IVendorService | undefined = VendorServices[vendor];
         if (!service) {
-            console.warn(`No service found for vendor: ${selectedVendor}`);
+            console.warn(`No service found for vendor: ${vendor}`);
             return;
         }
 
         try {
-            const data = await service.parseExcelFile(file);
+            let data = await service.parseExcelFile(file);
+            data = data.map(transaction => ({
+                ...transaction,
+                creditCard,  // Add card to each transaction
+            }));
             onData(data); // pass parsed data upward
         } catch (error) {
             console.error('Error reading file:', error);
@@ -37,13 +43,8 @@ const FileReaderComponent: React.FC<FileReaderComponentProps> = ({ onData }) => 
 
     return (
         <div>
-            <h2>Upload Excel File</h2>
-            <Select
-                options={vendorOptions}
-                isClearable
-                placeholder="בחר ספק"
-                onChange={(option) => setSelectedVendor(option?.value as Vendors || null)}
-            />
+            <div>{creditCard}</div>
+            <div>{vendor}</div>
             <input type="file" accept=".xlsx,.xls" onChange={handleFileChange}/>
         </div>
     );
