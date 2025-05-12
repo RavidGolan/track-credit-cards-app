@@ -1,4 +1,4 @@
-import {TransactionType} from "../Enums/transactionType";
+import {TransactionType} from "../enums/transactionType";
 
 export default interface ITransaction {
   transactionType?: TransactionType;

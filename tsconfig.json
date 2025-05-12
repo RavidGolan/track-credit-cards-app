@@ -22,7 +22,9 @@
     "baseUrl": "src",
     "paths": {
       "@Interfaces/*": ["common/interfaces/*"],
-      "@Components/*": ["components/*"]
+      "@Enums/*": ["common/enums/*"],
+      "@Components/*": ["components/*"],
+      "@Services/*":  ["services/*"],
     }
   },
   "include": [
