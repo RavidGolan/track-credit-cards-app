@@ -1,6 +1,6 @@
-import * as XLSX from 'xlsx';
 import ITransaction from "@Interfaces/ITransaction";
 import IVendorService from "@Interfaces/IVendorService";
+import {parseExcelFile} from "./ExcelUtils";
 
 export class LeumiService implements IVendorService {
 
@@ -43,15 +43,6 @@ export class LeumiService implements IVendorService {
     }
 
     async parseExcelFile(file: File): Promise<ITransaction[]> {
-        const arrayBuffer = await file.arrayBuffer();
-        const workbook = XLSX.read(arrayBuffer, {type: 'buffer'});
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const rawData = XLSX.utils.sheet_to_json(worksheet, {defval: ""});
-
-        console.log(rawData);
-        const transformedData = this.transformRawData(rawData);
-        console.log(transformedData);
-        return transformedData;
+        return parseExcelFile(file, this.transformRawData.bind(this));
     }
 }
