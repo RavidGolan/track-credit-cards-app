@@ -1,5 +1,5 @@
 import React from 'react';
-import {parseExcelFile} from '../services/isracardExcelService';
+import {parseExcelFile} from '../services/americanExpressExcelService';
 import ITransaction from "@Interfaces/ITransaction";
 
 interface FileReaderComponentProps {

@@ -1,4 +1,7 @@
+import {TransactionType} from "../Enums/transactionType";
+
 export default interface ITransaction {
+  transactionType?: TransactionType;
   date: string;         // ISO date string like "2025-08-04"
   vendor: string;       // Merchant or business name
   amount: number;       // Original transaction amount

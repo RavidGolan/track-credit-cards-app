@@ -1,5 +1,6 @@
 import ITransaction from "@Interfaces/ITransaction";
 import * as XLSX from "xlsx";
+import {TransactionType} from "../common/Enums/transactionType";
 
 function transformRawData(rawRows: any[]): ITransaction[] {
     return rawRows
@@ -7,6 +8,7 @@ function transformRawData(rawRows: any[]): ITransaction[] {
         .map(row => {
             if (typeof row["__EMPTY_2"] === "number") {
                 return {
+                    transactionType: TransactionType.CONSTANT,
                     date: row["__EMPTY"] || "",
                     vendor: row["__EMPTY_1"] || "",
                     amount: row["__EMPTY_2"],
@@ -15,6 +17,7 @@ function transformRawData(rawRows: any[]): ITransaction[] {
                 };
             } else {
                 return {
+                    transactionType: TransactionType.CONSTANT,
                     date: row["__EMPTY"] || "",
                     vendor: row["__EMPTY_2"] || "",
                     amount: row["__EMPTY_3"],

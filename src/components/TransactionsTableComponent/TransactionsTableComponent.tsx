@@ -11,6 +11,7 @@ const TransactionsTableComponent: React.FC<Props> = ({ transactions }) => {
         <table className="transactions-table">
             <thead>
             <tr>
+                <th>הוצאה קבועה / משתנה</th>
                 <th>תאריך</th>
                 <th>בית עסק</th>
                 <th>קטגוריה</th>
@@ -23,6 +24,7 @@ const TransactionsTableComponent: React.FC<Props> = ({ transactions }) => {
             <tbody>
             {transactions.map((tx, index) => (
                 <tr key={index}>
+                    <td>{tx.transactionType}</td>
                     <td>{tx.date}</td>
                     <td>{tx.vendor}</td>
                     <td>{tx.category}</td>
