@@ -1,12 +1,20 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {parseExcelFile} from '../services/americanExpressExcelService';
 import ITransaction from "@Interfaces/ITransaction";
+import {Vendors} from "../common/Enums/Vendors";
+import Select from 'react-select';
 
 interface FileReaderComponentProps {
     onData: (data: ITransaction[]) => void;
 }
 
 const FileReaderComponent: React.FC<FileReaderComponentProps> = ({ onData }) => {
+    const [selectedVendor, setSelectedVendor] = useState<string | null>(null);
+    const vendorOptions = Object.entries(Vendors).map(([key, value]) => ({
+        label: value,
+        value: key,
+    }));
+
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
@@ -22,7 +30,13 @@ const FileReaderComponent: React.FC<FileReaderComponentProps> = ({ onData }) => 
     return (
         <div>
             <h2>Upload Excel File</h2>
-            <input type="file" accept=".xlsx,.xls" onChange={handleFileChange} />
+            <Select
+                options={vendorOptions}
+                isClearable
+                placeholder="בחר ספק"
+                onChange={(option) => setSelectedVendor(option?.value || null)}
+            />
+            <input type="file" accept=".xlsx,.xls" onChange={handleFileChange}/>
         </div>
     );
 };
