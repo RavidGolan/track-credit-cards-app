@@ -11,20 +11,20 @@ const TransactionsTableComponent: React.FC<Props> = ({ transactions }) => {
         <table className="transactions-table">
             <thead>
             <tr>
-                <th>הוצאה קבועה / משתנה</th>
-                <th>תאריך</th>
-                <th>בית עסק</th>
-                <th>קטגוריה</th>
-                <th>סכום עסקה</th>
-                <th>סוג</th>
-                <th>פרטים</th>
-                <th>סכום חיוב</th>
+                <th>Constant / Changing</th>
+                <th>Date</th>
+                <th>Vendor</th>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Type</th>
+                <th>Details</th>
+                <th>Billed Amount</th>
             </tr>
             </thead>
             <tbody>
             {transactions.map((tx, index) => (
                 <tr key={index}>
-                    <td>{tx.transactionType}</td>
+                    <td>{tx.transactionType || "N/A"}</td>
                     <td>{tx.date}</td>
                     <td>{tx.vendor}</td>
                     <td>{tx.category}</td>

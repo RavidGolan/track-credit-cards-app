@@ -4,7 +4,6 @@
     border-collapse: collapse;
     font-family: sans-serif;
     font-size: 14px;
-    direction: rtl;
     text-align: center; /* ✅ center all cells by default */
 }
 

@@ -1,6 +1,6 @@
 export enum Vendors {
-    AMERICAN_EXPRESS = "אמריקן אקספרס",
-    LEUMI = "לאומי",
-    ISRACARD = "ישראכרט",
-    MAX = "מקס"
+    AMERICAN_EXPRESS = "American Express",
+    LEUMI = "Leumi",
+    ISRACARD = "Isracard",
+    MAX = "Max"
 }
