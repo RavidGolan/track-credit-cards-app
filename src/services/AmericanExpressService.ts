@@ -1,6 +1,6 @@
 import ITransaction from "@Interfaces/ITransaction";
 import * as XLSX from "xlsx";
-import {TransactionType} from "../common/enums/transactionType";
+import {TransactionType} from "../common/enums/TransactionType";
 import IVendorService from "./interfaces/IVendorService";
 
 export class AmericanExpressService implements IVendorService {
