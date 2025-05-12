@@ -1,5 +1,5 @@
 import { Vendors } from '../common/enums/Vendors';
-import IVendorService from "@Services/interfaces/IVendorService";
+import IVendorService from "@Interfaces/IVendorService";
 import {AmericanExpressService} from "./AmericanExpressService";
 
 export const VendorServices: Record<Vendors, IVendorService> = {

@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import ITransaction from "@Interfaces/ITransaction";
 import {Vendors} from "common/enums/Vendors";
 import Select from 'react-select';
-import IVendorService from "@Services/interfaces/IVendorService";
+import IVendorService from "@Interfaces/IVendorService";
 import {VendorServices} from "services/VendorServices";
 
 interface FileReaderComponentProps {
