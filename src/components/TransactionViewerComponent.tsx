@@ -4,6 +4,7 @@ import TransactionsTableComponent from './TransactionsTableComponent/Transaction
 import ITransaction from "@Interfaces/ITransaction";
 import {CreditCards} from "../common/enums/CreditCards";
 import {Vendors} from "../common/enums/Vendors";
+import TransactionsAgGridComponent from "./TransactionsAgGridComponent/TransactionsAgGridComponent";
 
 const TransactionViewerComponent: React.FC = () => {
     const [transactions, setTransactions] = useState<any[]>([]); // Use an array to hold data from multiple cards
@@ -19,7 +20,7 @@ const TransactionViewerComponent: React.FC = () => {
             <FileReaderComponent creditCard={CreditCards.AMERICAN_EXPRESS} vendor={Vendors.AMERICAN_EXPRESS} onData={handleNewData} />
             <FileReaderComponent creditCard={CreditCards.MAX} vendor={Vendors.MAX} onData={handleNewData} />
             {/* Render table only if there are transactions */}
-            {transactions.length > 0 && <TransactionsTableComponent transactions={transactions} />}
+            {transactions.length > 0 && <TransactionsAgGridComponent transactions={transactions} />}
         </div>
     );
 };

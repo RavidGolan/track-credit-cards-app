@@ -13,12 +13,6 @@ interface FileReaderComponentProps {
 }
 
 const FileReaderComponent: React.FC<FileReaderComponentProps> = ({ creditCard, vendor, onData }) => {
-    const vendorOptions = Object.entries(Vendors).map(([key, value]) => ({
-        label: value,
-        value: Vendors[key as keyof typeof Vendors],  // Ensure value is of type Vendors
-    }));
-
-
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
