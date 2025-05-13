@@ -79,10 +79,28 @@ const TransactionsAgGridComponent: React.FC<Props> = ({ transactions }) => {
                 values: CATEGORY_OPTIONS,
             },
         },
-        { field: 'amount', headerName: 'Amount', sortable: true, filter: true },
+        {
+            field: 'amount',
+            headerName: 'Amount',
+            sortable: true,
+            filter: true,
+            valueFormatter: ({ value }) =>
+                typeof value === 'number'
+                    ? value.toLocaleString('en-US') // ✅ comma format
+                    : value,
+        },
         { field: 'type', headerName: 'Type', sortable: true, filter: true },
         { field: 'details', headerName: 'Details', sortable: true, filter: true },
-        { field: 'billedAmount', headerName: 'Billed Amount', sortable: true, filter: true },
+        {
+            field: 'billedAmount',
+            headerName: 'Billed Amount',
+            sortable: true,
+            filter: true,
+            valueFormatter: ({ value }) =>
+                typeof value === 'number'
+                    ? value.toLocaleString('en-US')
+                    : value,
+        }
     ];
 
     // 4. Optional row coloring
