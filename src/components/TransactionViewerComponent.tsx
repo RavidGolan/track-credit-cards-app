@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import FileReaderComponent from './FileReaderComponent';
-import TransactionsTableComponent from './TransactionsTableComponent/TransactionsTableComponent';
 import ITransaction from "@Interfaces/ITransaction";
 import {CreditCards} from "../common/enums/CreditCards";
 import {Vendors} from "../common/enums/Vendors";
 import TransactionsAgGridComponent from "./TransactionsAgGridComponent/TransactionsAgGridComponent";
 
 const TransactionViewerComponent: React.FC = () => {
-    const [transactions, setTransactions] = useState<any[]>([]); // Use an array to hold data from multiple cards
+    const [transactions, setTransactions] = useState<ITransaction[]>([]); // Use an array to hold data from multiple cards
 
     // Update the onData handler to append new transactions
-    const handleNewData = (newData: any[]) => {
+    const handleNewData = (newData: ITransaction[]) => {
         setTransactions((prevTransactions) => [...prevTransactions, ...newData]);
     };
 
