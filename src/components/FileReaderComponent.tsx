@@ -26,7 +26,7 @@ const FileReaderComponent: React.FC<FileReaderComponentProps> = ({ creditCard, v
             let data = await service.parseExcelFile(file);
             data = data.map(transaction => ({
                 ...transaction,
-                creditCard,  // Add card to each transaction
+                source: creditCard,  // Add card to each transaction
             }));
             onData(data); // pass parsed data upward
         } catch (error) {

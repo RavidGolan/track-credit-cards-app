@@ -11,7 +11,7 @@ const TransactionsTableComponent: React.FC<Props> = ({ transactions }) => {
         <table className="transactions-table">
             <thead>
             <tr>
-                <th>Credit Card</th>
+                <th>Source</th>
                 <th>Constant / Changing</th>
                 <th>Date</th>
                 <th>Vendor</th>
@@ -25,7 +25,7 @@ const TransactionsTableComponent: React.FC<Props> = ({ transactions }) => {
             <tbody>
             {transactions.map((tx, index) => (
                 <tr key={index}>
-                    <td>{tx.creditCard}</td>
+                    <td>{tx.source}</td>
                     <td>{tx.transactionType || "N/A"}</td>
                     <td>{tx.date}</td>
                     <td>{tx.vendor}</td>

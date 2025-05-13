@@ -19,7 +19,7 @@ export default class BankTransactionsService {
         }*/
 
         const rent: ITransaction = {
-            creditCard: "Bank Leumi",
+            source: "Bank Leumi",
             transactionType: TransactionType.CONSTANT,
             date: "1",
             vendor: "Yair",

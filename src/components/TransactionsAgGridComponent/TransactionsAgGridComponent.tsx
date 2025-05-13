@@ -13,7 +13,7 @@ import {
     ValidationModule,
 } from 'ag-grid-community';
 
-import {SetFilterModule} from 'ag-grid-enterprise';
+// import {SetFilterModule} from 'ag-grid-enterprise';
 
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 
@@ -64,7 +64,7 @@ const TransactionsAgGridComponent: React.FC<Props> = ({ transactions }) => {
 
     // 3. Column definitions
     const columnDefs: ColDef<ITransaction>[] = [
-        { field: 'creditCard', headerName: 'Credit Card', sortable: true, filter: true },
+        { field: 'source', headerName: 'Credit Card', sortable: true, filter: true },
         { field: 'transactionType', headerName: 'Constant / Changing', sortable: true, filter: true },
         { field: 'date', headerName: 'Date', sortable: true, filter: true },
         { field: 'vendor', headerName: 'Vendor', sortable: true, filter: true },
