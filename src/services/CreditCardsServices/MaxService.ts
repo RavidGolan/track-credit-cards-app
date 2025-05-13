@@ -1,18 +1,21 @@
 import ITransaction from "@Interfaces/ITransaction";
 import IVendorService from "@Interfaces/IVendorService";
-import {parseExcelFile} from "./ExcelUtils";
+import {parseExcelFile} from "../ExcelUtils";
 
-export class IsracardService implements IVendorService {
+export class MaxService implements IVendorService {
+
     transformRawData(rawRows: any[]): ITransaction[] {
         return rawRows
-            .filter(row => row["__EMPTY"] && row["__EMPTY"] !== "תאריך רכישה" && row["__EMPTY_5"])
+            .filter(row => row["__EMPTY"] && row["__EMPTY"] !== "תאריך עסקה" && row["__EMPTY_4"])
             .map(row => {
                 return {
                     date: row["__EMPTY"] || "",
-                    vendor: row["__EMPTY_2"] || "",
+                    vendor: row["__EMPTY_1"] || "",
                     category: row[""] || "",
-                    amount: row["__EMPTY_3"],
-                    billedAmount: row["__EMPTY_5"],
+                    amount: row["__EMPTY_6"],
+                    type: row["__EMPTY_3"] || "",
+                    details: row["__EMPTY_9"] || "",
+                    billedAmount: row["__EMPTY_4"],
                 };
             });
     }
@@ -20,5 +23,4 @@ export class IsracardService implements IVendorService {
     async parseExcelFile(file: File): Promise<ITransaction[]> {
         return parseExcelFile(file, this.transformRawData);
     }
-
 }

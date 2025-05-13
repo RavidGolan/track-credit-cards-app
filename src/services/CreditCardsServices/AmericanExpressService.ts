@@ -1,7 +1,7 @@
 import ITransaction from "@Interfaces/ITransaction";
-import {TransactionType} from "../common/enums/TransactionType";
+import {TransactionType} from "../../common/enums/TransactionType";
 import IVendorService from "@Interfaces/IVendorService";
-import {parseExcelFile} from "./ExcelUtils";
+import {parseExcelFile} from "../ExcelUtils";
 
 export class AmericanExpressService implements IVendorService {
 

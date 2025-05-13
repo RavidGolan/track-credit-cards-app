@@ -1,6 +1,6 @@
 import ITransaction from "@Interfaces/ITransaction";
 import IVendorService from "@Interfaces/IVendorService";
-import {parseExcelFile} from "./ExcelUtils";
+import {parseExcelFile} from "../ExcelUtils";
 
 export class LeumiService implements IVendorService {
 
