@@ -28,6 +28,7 @@
     padding: 10px 12px;
     line-height: 1.6;
     border-bottom: 1px solid #eaeaea;
+    text-align: center;
 }
 
 .category-summary-table th {
@@ -37,10 +38,10 @@
 }
 
 .category-summary-table td.amount {
-    text-align: right;
     font-family: 'Roboto Mono', monospace;
     white-space: nowrap;
     color: #212121;
+    text-align: center;
 }
 
 .category-summary-table tbody tr:hover {

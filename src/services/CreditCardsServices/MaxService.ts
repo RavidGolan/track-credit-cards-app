@@ -11,7 +11,7 @@ export class MaxService implements ICreditCardIssuersService {
                 return {
                     date: row["__EMPTY"] || "",
                     vendor: row["__EMPTY_1"] || "",
-                    category: row[""] || "",
+                    // category: row[""] || "",
                     amount: row["__EMPTY_6"],
                     type: row["__EMPTY_3"] || "",
                     details: row["__EMPTY_9"] || "",
