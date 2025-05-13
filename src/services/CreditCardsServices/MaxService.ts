@@ -1,8 +1,8 @@
 import ITransaction from "@Interfaces/ITransaction";
-import ICreditCardService from "@Interfaces/ICreditCardService";
+import ICreditCardIssuersService from "@Interfaces/ICreditCardIssuersService";
 import {parseExcelFile} from "../ExcelUtils";
 
-export class MaxService implements ICreditCardService {
+export class MaxService implements ICreditCardIssuersService {
 
     transformRawData(rawRows: any[]): ITransaction[] {
         return rawRows

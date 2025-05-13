@@ -1,8 +1,8 @@
 import ITransaction from "@Interfaces/ITransaction";
-import ICreditCardService from "@Interfaces/ICreditCardService";
+import ICreditCardIssuersService from "@Interfaces/ICreditCardIssuersService";
 import {parseExcelFile} from "../ExcelUtils";
 
-export class IsracardService implements ICreditCardService {
+export class IsracardService implements ICreditCardIssuersService {
     transformRawData(rawRows: any[]): ITransaction[] {
         return rawRows
             .filter(row => row["__EMPTY"] && row["__EMPTY"] !== "תאריך רכישה" && row["__EMPTY_5"])

@@ -1,8 +1,8 @@
 import ITransaction from "@Interfaces/ITransaction";
-import ICreditCardService from "@Interfaces/ICreditCardService";
+import ICreditCardIssuersService from "@Interfaces/ICreditCardIssuersService";
 import {parseExcelFile} from "../ExcelUtils";
 
-export class LeumiService implements ICreditCardService {
+export class LeumiService implements ICreditCardIssuersService {
 
     excelDateToISO(serial: number): string {
         const utc_days = Math.floor(serial - 25569); // Excel date to Unix date

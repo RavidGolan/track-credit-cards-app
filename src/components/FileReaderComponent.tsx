@@ -1,13 +1,13 @@
 import React from 'react';
 import ITransaction from "@Interfaces/ITransaction";
-import {CardIssuers} from "../common/enums/CardIssuers";
-import ICreditCardService from "@Interfaces/ICreditCardService";
+import {CreditCardIssuers} from "../common/enums/CreditCardIssuers";
+import ICreditCardIssuersService from "@Interfaces/ICreditCardIssuersService";
 import {CreditCardsServices} from "../services/CreditCardsServices";
 import {CreditCards} from "../common/enums/CreditCards";
 
 interface FileReaderComponentProps {
     creditCard: CreditCards,
-    vendor: CardIssuers,
+    vendor: CreditCardIssuers,
     onData: (data: ITransaction[]) => void;
 }
 
@@ -16,7 +16,7 @@ const FileReaderComponent: React.FC<FileReaderComponentProps> = ({ creditCard, v
         const file = event.target.files?.[0];
         if (!file) return;
 
-        const service: ICreditCardService | undefined = CreditCardsServices[vendor];
+        const service: ICreditCardIssuersService | undefined = CreditCardsServices[vendor];
         if (!service) {
             console.warn(`No service found for vendor: ${vendor}`);
             return;

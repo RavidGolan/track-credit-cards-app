@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import FileReaderComponent from './FileReaderComponent';
 import ITransaction from "@Interfaces/ITransaction";
 import {CreditCards} from "../common/enums/CreditCards";
-import {CardIssuers} from "../common/enums/CardIssuers";
+import {CreditCardIssuers} from "../common/enums/CreditCardIssuers";
 import TransactionsAgGridComponent from "./TransactionsAgGridComponent/TransactionsAgGridComponent";
 import BankTransactionsService from "../services/BankTransactionsService";
 
@@ -27,8 +27,8 @@ const TransactionViewerComponent: React.FC = () => {
     return (
         <div>
             {/* Add multiple FileReaderComponent instances */}
-            <FileReaderComponent creditCard={CreditCards.AMERICAN_EXPRESS} vendor={CardIssuers.AMERICAN_EXPRESS} onData={handleNewData} />
-            <FileReaderComponent creditCard={CreditCards.MAX} vendor={CardIssuers.MAX} onData={handleNewData} />
+            <FileReaderComponent creditCard={CreditCards.AMERICAN_EXPRESS} vendor={CreditCardIssuers.AMERICAN_EXPRESS} onData={handleNewData} />
+            <FileReaderComponent creditCard={CreditCards.MAX} vendor={CreditCardIssuers.MAX} onData={handleNewData} />
             {/* Render table only if there are transactions */}
             {transactions.length > 0 && <TransactionsAgGridComponent transactions={transactions} />}
         </div>
