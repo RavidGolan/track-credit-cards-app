@@ -5,6 +5,7 @@ import {CreditCards} from "../common/enums/CreditCards";
 import {CreditCardIssuers} from "../common/enums/CreditCardIssuers";
 import TransactionsAgGridComponent from "./TransactionsAgGridComponent/TransactionsAgGridComponent";
 import BankTransactionsService from "../services/BankTransactionsService";
+import CategorySummaryTable from "./CategorySummaryTable/CategorySummaryTable";
 
 const TransactionViewerComponent: React.FC = () => {
     const [transactions, setTransactions] = useState<ITransaction[]>([]); // Use an array to hold data from multiple cards
@@ -26,6 +27,7 @@ const TransactionViewerComponent: React.FC = () => {
 
     return (
         <div>
+            <CategorySummaryTable transactions={transactions} />
             {/* Add multiple FileReaderComponent instances */}
             <FileReaderComponent creditCard={CreditCards.AMERICAN_EXPRESS} vendor={CreditCardIssuers.AMERICAN_EXPRESS} onData={handleNewData} />
             <FileReaderComponent creditCard={CreditCards.MAX} vendor={CreditCardIssuers.MAX} onData={handleNewData} />
