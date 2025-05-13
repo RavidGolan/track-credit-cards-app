@@ -1,21 +1,31 @@
-import React from 'react';
-import {AgGridReact} from 'ag-grid-react';
+import React, {useEffect, useState} from 'react';
+import {AgGridReact,} from 'ag-grid-react';
 import {
     ClientSideRowModelModule,
     ColDef,
-    ModuleRegistry, NumberFilterModule, PaginationModule,
+    ModuleRegistry,
+    NumberFilterModule,
+    PaginationModule,
     RowClassParams,
-    RowStyle, RowStyleModule, TextFilterModule,
+    RowStyle,
+    RowStyleModule, SelectEditorModule,
+    TextFilterModule,
     ValidationModule,
 } from 'ag-grid-community';
-// import { SetFilterModule } from 'ag-grid-enterprise';
 
-import 'ag-grid-community/styles/ag-theme-quartz.css'; // ✅ New theming API only
-// ❌ Don't import ag-grid.css (legacy theme), it's no longer needed or allowed
+import {SetFilterModule} from 'ag-grid-enterprise';
+
+import 'ag-grid-community/styles/ag-theme-quartz.css';
+
 import ITransaction from '@Interfaces/ITransaction';
+import {
+    getVendorCategory,
+    setVendorCategory,
+} from '../../services/supabase/vendorCategoryService';
 import {TransactionType} from "../../common/enums/TransactionType";
+import {Category} from "../../common/enums/Category";
 
-// ✅ Register AG Grid modules once
+// Register AG Grid modules
 ModuleRegistry.registerModules([
     ClientSideRowModelModule,
     ValidationModule,
@@ -23,7 +33,8 @@ ModuleRegistry.registerModules([
     PaginationModule,
     TextFilterModule,
     NumberFilterModule,
-    // SetFilterModule
+    // SetFilterModule,
+    SelectEditorModule
 ]);
 
 interface Props {
@@ -31,18 +42,50 @@ interface Props {
 }
 
 const TransactionsAgGridComponent: React.FC<Props> = ({ transactions }) => {
+    const [rowData, setRowData] = useState<ITransaction[]>([]);
+
+    // 1. Load vendor-category mapping and patch transactions
+    useEffect(() => {
+        const enrich = async () => {
+            const enriched = await Promise.all(
+                transactions.map(async (tx) => ({
+                    ...tx,
+                    category: tx.category || (await getVendorCategory(tx.vendor)) || '',
+                }))
+            );
+            setRowData(enriched);
+        };
+
+        enrich();
+    }, [transactions]);
+
+    // 2. Category enum options
+    const CATEGORY_OPTIONS = Object.values(Category);
+
+    // 3. Column definitions
     const columnDefs: ColDef<ITransaction>[] = [
         { field: 'creditCard', headerName: 'Credit Card', sortable: true, filter: true },
-        { field: 'transactionType', headerName: 'Constant / Changing', sortable: true, filter: 'agSetColumnFilter' },
+        { field: 'transactionType', headerName: 'Constant / Changing', sortable: true, filter: true },
         { field: 'date', headerName: 'Date', sortable: true, filter: true },
-        { field: 'vendor', headerName: 'Vendor', sortable: true, filter: 'agSetColumnFilter' },
-        { field: 'category', headerName: 'Category', sortable: true, filter: 'agSetColumnFilter' },
+        { field: 'vendor', headerName: 'Vendor', sortable: true, filter: true },
+        {
+            field: 'category',
+            headerName: 'Category',
+            editable: true,
+            sortable: true,
+            filter: true,
+            cellEditor: 'agSelectCellEditor',
+            cellEditorParams: {
+                values: CATEGORY_OPTIONS,
+            },
+        },
         { field: 'amount', headerName: 'Amount', sortable: true, filter: true },
-        { field: 'type', headerName: 'Type', sortable: true, filter: 'agSetColumnFilter' },
+        { field: 'type', headerName: 'Type', sortable: true, filter: true },
         { field: 'details', headerName: 'Details', sortable: true, filter: true },
         { field: 'billedAmount', headerName: 'Billed Amount', sortable: true, filter: true },
     ];
 
+    // 4. Optional row coloring
     const getRowStyle = (params: RowClassParams<ITransaction, unknown>): RowStyle | undefined => {
         const data = params.data;
         if (!data) return undefined;
@@ -56,15 +99,28 @@ const TransactionsAgGridComponent: React.FC<Props> = ({ transactions }) => {
         return undefined;
     };
 
+    // 5. Save new category mapping when user changes it
+    const handleCellValueChanged = async (params: any) => {
+        if (params.colDef.field === 'category') {
+            const { vendor } = params.data;
+            const category = params.newValue as Category;
+
+            if (vendor && Object.values(Category).includes(category)) {
+                await setVendorCategory(vendor, category);
+            }
+        }
+    };
+
     return (
         <div className="ag-theme-quartz" style={{ height: 600, width: '100%' }}>
             <AgGridReact<ITransaction>
-                rowData={transactions}
+                rowData={rowData}
                 columnDefs={columnDefs}
                 getRowStyle={getRowStyle}
                 animateRows={true}
                 pagination={true}
                 rowModelType="clientSide"
+                onCellValueChanged={handleCellValueChanged}
             />
         </div>
     );
