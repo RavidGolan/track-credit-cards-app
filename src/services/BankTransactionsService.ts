@@ -1,6 +1,5 @@
 import ITransaction from "@Interfaces/ITransaction";
 import {TransactionType} from "../common/enums/TransactionType";
-import {Category} from "../common/enums/Category";
 
 export default class BankTransactionsService {
     static getTransactions(): ITransaction[] {
@@ -12,8 +11,7 @@ export default class BankTransactionsService {
             date: "1",
             vendor: "יאיר כהן",
             amount: 9450,
-            billedAmount: 9450,
-            category: Category.RENT
+            billedAmount: 9450
         }
         bankTransactions.push(rent);
 
@@ -23,8 +21,7 @@ export default class BankTransactionsService {
             date: "1",
             vendor: "ועד בית חייקה",
             amount: 440,
-            billedAmount: 440,
-            category: Category.BUILDING_MAINTENANCE
+            billedAmount: 440
         }
         bankTransactions.push(buildingMaintenance);
 
@@ -34,8 +31,7 @@ export default class BankTransactionsService {
             date: "1",
             vendor: "לאומי למשכנת-י",
             amount: 12600,
-            billedAmount: 12600,
-            category: Category.MORTGAGE
+            billedAmount: 12600
         }
         bankTransactions.push(mortgage);
 
@@ -45,8 +41,7 @@ export default class BankTransactionsService {
             date: "1",
             vendor: "גן רונית בע״מ",
             amount: 4200,
-            billedAmount: 4200,
-            category: Category.KINDERGARTEN
+            billedAmount: 4200
         }
         bankTransactions.push(michalKindergarten);
 
@@ -56,8 +51,7 @@ export default class BankTransactionsService {
             date: "1",
             vendor: "שושנה",
             amount: 4200,
-            billedAmount: 4200,
-            category: Category.KINDERGARTEN
+            billedAmount: 4200
         }
         bankTransactions.push(itayKindergarten);
 
@@ -67,8 +61,7 @@ export default class BankTransactionsService {
             date: "10",
             vendor: "קרקע ברעננה",
             amount: 6145,
-            billedAmount: 6145,
-            category: Category.INVESTMENT
+            billedAmount: 6145
         }
         bankTransactions.push(investmentInLand);
 

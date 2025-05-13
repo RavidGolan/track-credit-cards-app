@@ -6,6 +6,7 @@ import {CreditCardIssuers} from "../common/enums/CreditCardIssuers";
 import TransactionsAgGridComponent from "./TransactionsAgGridComponent/TransactionsAgGridComponent";
 import BankTransactionsService from "../services/BankTransactionsService";
 import CategorySummaryTable from "./CategorySummaryTable/CategorySummaryTable";
+import {getVendorCategory} from "../services/supabase/vendorCategoryService";
 
 const TransactionViewerComponent: React.FC = () => {
     const [transactions, setTransactions] = useState<ITransaction[]>([]); // Use an array to hold data from multiple cards
@@ -14,15 +15,32 @@ const TransactionViewerComponent: React.FC = () => {
         return BankTransactionsService.getTransactions(); // For now, just return empty
     }
 
+    const enrichTransactionsWithCategories = async (
+        txs: ITransaction[]
+    ): Promise<ITransaction[]> => {
+        return Promise.all(
+            txs.map(async (tx) => ({
+                ...tx,
+                category: tx.category || (await getVendorCategory(tx.vendor)) || '',
+            }))
+        );
+    };
+
     // ✅ Load initial transactions on mount
     useEffect(() => {
-        const initial = loadInitialTransactions();
-        setTransactions(initial);
+        const init = async () => {
+            const rawTransactions = loadInitialTransactions();
+            const enriched = await enrichTransactionsWithCategories(rawTransactions);
+            setTransactions(enriched);
+        };
+
+        init();
     }, []);
 
     // Update the onData handler to append new transactions
-    const handleNewData = (newData: ITransaction[]) => {
-        setTransactions((prevTransactions) => [...prevTransactions, ...newData]);
+    const handleNewData = async (newTransactions: ITransaction[]) => {
+        const enriched = await enrichTransactionsWithCategories(newTransactions);
+        setTransactions((prev) => [...prev, ...enriched]);
     };
 
     return (
