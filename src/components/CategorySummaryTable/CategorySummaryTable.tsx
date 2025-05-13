@@ -44,9 +44,22 @@ const groupByCategoryAndType = (transactions: ITransaction[]): SummaryRow[] => {
     });
 };
 
+const sortSummary = (summary: SummaryRow[]) => {
+    summary.sort((a, b) => {
+        if (a.category === 'Uncategorized') return 1;
+        if (b.category === 'Uncategorized') return -1;
+
+        const catCompare = a.category.localeCompare(b.category);
+        if (catCompare !== 0) return catCompare;
+
+        return a.transactionType.localeCompare(b.transactionType);
+    });
+}
+
 
 const CategorySummaryTable: React.FC<CategorySummaryTableProps> = ({ transactions }) => {
     const summary = groupByCategoryAndType(transactions);
+    sortSummary(summary);
 
     return (
         <div className="category-summary-container">
