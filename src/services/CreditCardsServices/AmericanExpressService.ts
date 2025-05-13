@@ -1,9 +1,9 @@
 import ITransaction from "@Interfaces/ITransaction";
 import {TransactionType} from "../../common/enums/TransactionType";
-import IVendorService from "@Interfaces/IVendorService";
+import ICreditCardService from "@Interfaces/ICreditCardService";
 import {parseExcelFile} from "../ExcelUtils";
 
-export class AmericanExpressService implements IVendorService {
+export class AmericanExpressService implements ICreditCardService {
 
     transformRawData(rawRows: any[]): ITransaction[] {
         return rawRows
