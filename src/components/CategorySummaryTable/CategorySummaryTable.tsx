@@ -30,8 +30,8 @@ const groupByCategoryAndType = (transactions: ITransaction[]): SummaryRow[] => {
         const type = tx.transactionType || 'Unknown';
 
         const key = `${category}::${type}`;
-        const amount = tx.billedAmount ?? tx.amount ?? 0;
-        totals[key] = (totals[key] || 0) + amount;
+        const billedAmount = tx.billedAmount ?? 0;
+        totals[key] = (totals[key] || 0) + billedAmount;
     }
 
     return Object.entries(totals).map(([key, total]) => {

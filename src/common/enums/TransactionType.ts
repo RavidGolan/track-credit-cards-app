@@ -1,4 +1,4 @@
 export enum TransactionType {
-    CONSTANT = "Constant",
-    CHANGING = "Changing"
+    CONSTANT = "קבוע",
+    CHANGING = "משתנה"
 }
