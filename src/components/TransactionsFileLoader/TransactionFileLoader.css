@@ -1,0 +1,35 @@
+.transaction-file-loader-container {
+    font-family: Arial, sans-serif;
+    padding: 1rem;
+}
+
+.transaction-file-loader-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.transaction-file-loader-selects {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+    margin-bottom: 1rem;
+}
+
+.transaction-file-loader-selects label {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+}
+
+.transaction-file-loader-button {
+    padding: 6px 16px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.transaction-file-loader-status {
+    font-size: 14px;
+    margin-top: 0.5rem;
+    color: #333;
+}

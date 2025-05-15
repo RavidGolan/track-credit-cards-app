@@ -7,6 +7,7 @@ import TransactionsAgGridComponent from "./TransactionsAgGridComponent/Transacti
 import BankTransactionsService from "../services/BankTransactionsService";
 import CategorySummaryTable from "./CategorySummaryTable/CategorySummaryTable";
 import {getVendorCategory} from "../services/supabase/vendorCategoryService";
+import TransactionFileLoader from "./TransactionsFileLoader/TransactionsFileLoader";
 
 const TransactionViewerComponent: React.FC = () => {
     const [transactions, setTransactions] = useState<ITransaction[]>([]); // Use an array to hold data from multiple cards
@@ -45,6 +46,7 @@ const TransactionViewerComponent: React.FC = () => {
 
     return (
         <div>
+            <TransactionFileLoader onData={handleNewData} />
             <CategorySummaryTable transactions={transactions} />
             {/* Add multiple FileReaderComponent instances */}
             <FileReaderComponent creditCard={CreditCards.AMERICAN_EXPRESS} vendor={CreditCardIssuers.AMERICAN_EXPRESS} onData={handleNewData} />

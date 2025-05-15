@@ -1,6 +1,7 @@
 import ITransaction from "@Interfaces/ITransaction";
 import ICreditCardIssuersService from "@Interfaces/ICreditCardIssuersService";
 import {parseExcelFile} from "../ExcelUtils";
+import {TransactionType} from "../../common/enums/TransactionType";
 
 export class LeumiService implements ICreditCardIssuersService {
 
@@ -32,6 +33,7 @@ export class LeumiService implements ICreditCardIssuersService {
                 }
 
                 return {
+                    transactionType: TransactionType.CHANGING,
                     date,
                     vendor: row["__EMPTY"] || "",
                     amount: parseFloat(row["__EMPTY_1"]) || 0,

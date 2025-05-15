@@ -1,6 +1,7 @@
 import ITransaction from "@Interfaces/ITransaction";
 import ICreditCardIssuersService from "@Interfaces/ICreditCardIssuersService";
 import {parseExcelFile} from "../ExcelUtils";
+import {TransactionType} from "../../common/enums/TransactionType";
 
 export class IsracardService implements ICreditCardIssuersService {
     transformRawData(rawRows: any[]): ITransaction[] {
@@ -8,6 +9,7 @@ export class IsracardService implements ICreditCardIssuersService {
             .filter(row => row["__EMPTY"] && row["__EMPTY"] !== "תאריך רכישה" && row["__EMPTY_5"])
             .map(row => {
                 return {
+                    transactionType: TransactionType.CHANGING,
                     date: row["__EMPTY"] || "",
                     vendor: row["__EMPTY_2"] || "",
                     category: row[""] || "",
