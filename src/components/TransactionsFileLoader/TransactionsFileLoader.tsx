@@ -12,6 +12,8 @@ interface Props {
 }
 
 const TransactionFileLoader: React.FC<Props> = ({ onData }) => {
+    const [mode, setMode] = useState<'byMonth' | 'full'>('full');
+
     const [creditCard, setCreditCard] = useState<CreditCards | ''>('');
     const [year, setYear] = useState<string | ''>('');
     const [month, setMonth] = useState<string | ''>('');
@@ -26,14 +28,9 @@ const TransactionFileLoader: React.FC<Props> = ({ onData }) => {
         load();
     }, []);
 
-    const handleLoad = async () => {
-        if (!creditCard || !year || !month) {
-            setStatus('יש לבחור כרטיס, שנה וחודש');
-            return;
-        }
-
+    const loadTransactions = async (currentCreditCard: CreditCards) => {
         const folder = `${year}/${month.toString()}`;
-        const filename = `${CreditCardToNumberMap[creditCard]}_${month}_${year}.xlsx`;
+        const filename = `${CreditCardToNumberMap[currentCreditCard]}_${month}_${year}.xlsx`;
         const path = `${folder}/${filename}`;
 
         try {
@@ -42,21 +39,45 @@ const TransactionFileLoader: React.FC<Props> = ({ onData }) => {
             setStatus('✅ הקובץ נטען בהצלחה');
 
 
-            const service: ICreditCardIssuersService | undefined = CreditCardsServices[CreditCardToIssuerMap[creditCard]];
+            const service: ICreditCardIssuersService | undefined = CreditCardsServices[CreditCardToIssuerMap[currentCreditCard]];
             if (!service) {
-                console.warn(`No service found for vendor: ${creditCard}`);
+                console.warn(`No service found for vendor: ${currentCreditCard}`);
                 return;
             }
 
             let transactions = service.transformRawData(data);
-            console.log(transactions);
-            const transactionsWithSource = transactions.map((transaction) => ({...transaction, source: creditCard}));
+            const transactionsWithSource = transactions.map((transaction) => ({
+                ...transaction,
+                source: currentCreditCard
+            }));
             console.log(transactionsWithSource);
             onData(transactionsWithSource);
         } catch (err: any) {
             console.error(err);
             setStatus('❌ הקובץ לא נמצא או שגיאה בקריאה');
             onData([]);
+        }
+    }
+
+    const handleLoad = async () => {
+        if (mode === 'byMonth') {
+            if (!year || !month) {
+                setStatus('יש לבחור שנה וחודש');
+                return;
+            }
+
+            await Promise.all(
+                Object.values(CreditCards).map(card =>
+                    loadTransactions(card as CreditCards)
+                )
+            );
+        } else {
+            if (!creditCard || !year || !month) {
+                setStatus('יש לבחור כרטיס, שנה וחודש');
+                return;
+            }
+
+            await loadTransactions(creditCard);
         }
     };
 
@@ -67,16 +88,41 @@ const TransactionFileLoader: React.FC<Props> = ({ onData }) => {
         <div className="transaction-file-loader-container" dir="rtl">
             <h2 className="transaction-file-loader-title">טעינת קובץ עסקאות מהאחסון</h2>
 
-            <div className="transaction-file-loader-selects">
+            <div className="mode-selector">
                 <label>
-                    כרטיס אשראי:
-                    <select value={creditCard} onChange={(e) => setCreditCard(e.target.value as CreditCards)}>
-                        <option value="">בחר</option>
-                        {Object.values(CreditCards).map((card) => (
-                            <option key={card} value={card}>{card}</option>
-                        ))}
-                    </select>
+                    <input
+                        type="radio"
+                        value="byMonth"
+                        checked={mode === 'byMonth'}
+                        onChange={() => setMode('byMonth')}
+                    />
+                    לפי חודש בלבד
                 </label>
+
+                <label>
+                    <input
+                        type="radio"
+                        value="full"
+                        checked={mode === 'full'}
+                        onChange={() => setMode('full')}
+                    />
+                    לפי שנה + חודש + כרטיס
+                </label>
+            </div>
+
+
+            <div className="transaction-file-loader-selects">
+                {mode === 'full' && (
+                    <label>
+                        כרטיס אשראי:
+                        <select value={creditCard} onChange={(e) => setCreditCard(e.target.value as CreditCards)}>
+                            <option value="">בחר</option>
+                            {Object.values(CreditCards).map((card) => (
+                                <option key={card} value={card}>{card}</option>
+                            ))}
+                        </select>
+                    </label>
+                )}
 
                 <label>
                     שנה:
@@ -97,10 +143,9 @@ const TransactionFileLoader: React.FC<Props> = ({ onData }) => {
                         ))}
                     </select>
                 </label>
-
-                <button className="transaction-file-loader-button" onClick={handleLoad}>טען קובץ</button>
             </div>
 
+            <button className="transaction-file-loader-button" onClick={handleLoad}>טען</button>
             <p className="transaction-file-loader-status">{status}</p>
         </div>
     );

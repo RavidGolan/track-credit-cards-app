@@ -48,9 +48,6 @@ const TransactionViewerComponent: React.FC = () => {
         <div>
             <TransactionFileLoader onData={handleNewData} />
             <CategorySummaryTable transactions={transactions} />
-            {/* Add multiple FileReaderComponent instances */}
-            <FileReaderComponent creditCard={CreditCards.AMERICAN_EXPRESS} vendor={CreditCardIssuers.AMERICAN_EXPRESS} onData={handleNewData} />
-            <FileReaderComponent creditCard={CreditCards.MAX} vendor={CreditCardIssuers.MAX} onData={handleNewData} />
             {/* Render table only if there are transactions */}
             {transactions.length > 0 && <TransactionsAgGridComponent transactions={transactions} />}
         </div>
