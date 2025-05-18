@@ -49,6 +49,7 @@ const TransactionFileLoader: React.FC<Props> = ({ onData }) => {
             }
 
             let transactions = service.transformRawData(data);
+            console.log(transactions);
             onData(transactions);
         } catch (err: any) {
             console.error(err);

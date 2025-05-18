@@ -12,19 +12,19 @@ export class AmericanExpressService implements ICreditCardIssuersService {
                 if (!isNaN(Number(row["__EMPTY_1"]))) {
                     return {
                         transactionType: TransactionType.CONSTANT,
-                        date: row["גולן טל"] || "",
+                        date: row["אמריקן אקספרס זהב - 5147"] || "",
                         vendor: row["__EMPTY"] || "",
-                        amount: row["__EMPTY_1"],
+                        amount: parseFloat(row["__EMPTY_1"]),
                         details: row["__EMPTY_6"] || "",
-                        billedAmount: row["__EMPTY_3"],
+                        billedAmount: parseFloat(row["__EMPTY_3"]),
                     };
                 } else {
                     return {
                         transactionType: TransactionType.CONSTANT,
-                        date: row["גולן טל"] || "",
+                        date: row["אמריקן אקספרס זהב - 5147"] || "",
                         vendor: row["__EMPTY_1"] || "",
-                        amount: row["__EMPTY_2"],
-                        billedAmount: row["__EMPTY_4"],
+                        amount: parseFloat(row["__EMPTY_2"]),
+                        billedAmount: parseFloat(row["__EMPTY_4"]),
                     };
                 }
 

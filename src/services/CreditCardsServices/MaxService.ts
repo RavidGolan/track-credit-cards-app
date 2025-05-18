@@ -14,10 +14,10 @@ export class MaxService implements ICreditCardIssuersService {
                     date: row["__EMPTY"] || "",
                     vendor: row["__EMPTY_1"] || "",
                     // category: row[""] || "",
-                    amount: row["__EMPTY_6"],
+                    amount: parseFloat(row["__EMPTY_6"]),
                     type: row["__EMPTY_3"] || "",
                     details: row["__EMPTY_9"] || "",
-                    billedAmount: row["__EMPTY_4"],
+                    billedAmount: parseFloat(row["__EMPTY_4"]),
                 };
             });
     }

@@ -13,8 +13,8 @@ export class IsracardService implements ICreditCardIssuersService {
                     date: row["__EMPTY"] || "",
                     vendor: row["__EMPTY_2"] || "",
                     category: row[""] || "",
-                    amount: row["__EMPTY_3"],
-                    billedAmount: row["__EMPTY_5"],
+                    amount: parseFloat(row["__EMPTY_3"]),
+                    billedAmount: parseFloat(row["__EMPTY_5"]),
                 };
             });
     }
