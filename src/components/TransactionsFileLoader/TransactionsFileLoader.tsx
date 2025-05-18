@@ -50,7 +50,9 @@ const TransactionFileLoader: React.FC<Props> = ({ onData }) => {
 
             let transactions = service.transformRawData(data);
             console.log(transactions);
-            onData(transactions);
+            const transactionsWithSource = transactions.map((transaction) => ({...transaction, source: creditCard}));
+            console.log(transactionsWithSource);
+            onData(transactionsWithSource);
         } catch (err: any) {
             console.error(err);
             setStatus('❌ הקובץ לא נמצא או שגיאה בקריאה');
