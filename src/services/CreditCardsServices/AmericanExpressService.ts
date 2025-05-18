@@ -7,24 +7,24 @@ export class AmericanExpressService implements ICreditCardIssuersService {
 
     transformRawData(rawRows: any[]): ITransaction[] {
         return rawRows
-            .filter(row => row["__EMPTY"] && row["__EMPTY"] !== "תאריך רכישה" && row["__EMPTY_4"] && row["__EMPTY_1"] !== "סך חיוב בש\"ח:")
+            .filter(row => !isNaN(Number(row["__EMPTY_1"])) || !isNaN(Number(row["__EMPTY_2"])))
             .map(row => {
-                if (typeof row["__EMPTY_2"] === "number") {
+                if (!isNaN(Number(row["__EMPTY_1"]))) {
                     return {
                         transactionType: TransactionType.CONSTANT,
-                        date: row["__EMPTY"] || "",
-                        vendor: row["__EMPTY_1"] || "",
-                        amount: row["__EMPTY_2"],
-                        details: row["__EMPTY_7"] || "",
-                        billedAmount: row["__EMPTY_4"],
+                        date: row["גולן טל"] || "",
+                        vendor: row["__EMPTY"] || "",
+                        amount: row["__EMPTY_1"],
+                        details: row["__EMPTY_6"] || "",
+                        billedAmount: row["__EMPTY_3"],
                     };
                 } else {
                     return {
                         transactionType: TransactionType.CONSTANT,
-                        date: row["__EMPTY"] || "",
-                        vendor: row["__EMPTY_2"] || "",
-                        amount: row["__EMPTY_3"],
-                        billedAmount: row["__EMPTY_5"],
+                        date: row["גולן טל"] || "",
+                        vendor: row["__EMPTY_1"] || "",
+                        amount: row["__EMPTY_2"],
+                        billedAmount: row["__EMPTY_4"],
                     };
                 }
 

@@ -5,7 +5,7 @@ import {CreditCards} from "../../common/enums/CreditCards";
 import {StorageService} from "../../services/supabase/storageService";
 import ICreditCardIssuersService from "@Interfaces/ICreditCardIssuersService";
 import {CreditCardsServices} from "../../services/CreditCardsServices";
-import {CreditCardToIssuerMap} from "../../common/utils/creditCardMappings";
+import {CreditCardToIssuerMap, CreditCardToNumberMap} from "../../common/utils/creditCardMappings";
 
 interface Props {
     onData: (data: ITransaction[]) => void;
@@ -24,7 +24,7 @@ const TransactionFileLoader: React.FC<Props> = ({ onData }) => {
         }
 
         const folder = `${year}/${month.toString().padStart(2, '0')}`;
-        const filename = `${creditCard}.xlsx`;
+        const filename = `${CreditCardToNumberMap[creditCard]}_${month.toString().padStart(2, '0')}_${year}.xlsx`;
         const path = `${folder}/${filename}`;
 
         try {

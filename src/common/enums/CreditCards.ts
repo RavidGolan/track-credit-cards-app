@@ -3,5 +3,6 @@ export enum CreditCards {
     LEUMI = "Leumi",
     ISRACARD = "Isracard",
     MAX = "Max",
-    LIFE_STYLE = "Life Style"
+    LIFE_STYLE = "Life Style",
+    ONE_ZERO = "ONE ZERO"
 }
