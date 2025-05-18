@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import './TransactionFileLoader.css';
 import ITransaction from "@Interfaces/ITransaction";
 import {CreditCards} from "../../common/enums/CreditCards";
@@ -13,9 +13,18 @@ interface Props {
 
 const TransactionFileLoader: React.FC<Props> = ({ onData }) => {
     const [creditCard, setCreditCard] = useState<CreditCards | ''>('');
-    const [year, setYear] = useState<number | ''>('');
-    const [month, setMonth] = useState<number | ''>('');
+    const [year, setYear] = useState<string | ''>('');
+    const [month, setMonth] = useState<string | ''>('');
     const [status, setStatus] = useState<string>('');
+    const [availableYearsAndMonths, setAvailableYearsAndMonths] = useState<Record<string, string[]>>({})
+
+    useEffect(() => {
+        const load = async () => {
+            const folderMap = await StorageService.getAvailableYearsAndMonths();
+            setAvailableYearsAndMonths(folderMap);
+        };
+        load();
+    }, []);
 
     const handleLoad = async () => {
         if (!creditCard || !year || !month) {
@@ -23,8 +32,8 @@ const TransactionFileLoader: React.FC<Props> = ({ onData }) => {
             return;
         }
 
-        const folder = `${year}/${month.toString().padStart(2, '0')}`;
-        const filename = `${CreditCardToNumberMap[creditCard]}_${month.toString().padStart(2, '0')}_${year}.xlsx`;
+        const folder = `${year}/${month.toString()}`;
+        const filename = `${CreditCardToNumberMap[creditCard]}_${month}_${year}.xlsx`;
         const path = `${folder}/${filename}`;
 
         try {
@@ -48,10 +57,8 @@ const TransactionFileLoader: React.FC<Props> = ({ onData }) => {
         }
     };
 
-    const monthNames = [
-        'ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני',
-        'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'
-    ];
+    const years = useMemo(() => Object.keys(availableYearsAndMonths).sort(), [availableYearsAndMonths]);
+    const months = availableYearsAndMonths[year] || [];
 
     return (
         <div className="transaction-file-loader-container" dir="rtl">
@@ -70,9 +77,9 @@ const TransactionFileLoader: React.FC<Props> = ({ onData }) => {
 
                 <label>
                     שנה:
-                    <select value={year} onChange={(e) => setYear(Number(e.target.value))}>
+                    <select value={year} onChange={(e) => setYear(e.target.value)}>
                         <option value="">בחר</option>
-                        {[2022, 2023, 2024, 2025].map((y) => (
+                        {years.map((y) => (
                             <option key={y} value={y}>{y}</option>
                         ))}
                     </select>
@@ -80,10 +87,10 @@ const TransactionFileLoader: React.FC<Props> = ({ onData }) => {
 
                 <label>
                     חודש:
-                    <select value={month} onChange={(e) => setMonth(Number(e.target.value))}>
+                    <select value={month} onChange={(e) => setMonth(e.target.value)}>
                         <option value="">בחר</option>
-                        {monthNames.map((name, index) => (
-                            <option key={index + 1} value={index + 1}>{name}</option>
+                        {months.map(month => (
+                            <option key={month} value={month}>{month}</option>
                         ))}
                     </select>
                 </label>

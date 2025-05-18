@@ -49,4 +49,37 @@ export const StorageService = {
         console.log(jsonData);
         return jsonData; // ✅ this is your AG Grid rowData
     },
+
+    async getAvailableYearsAndMonths(): Promise<Record<string, string[]>> {
+        const result: Record<string, string[]> = {};
+
+        const { data: years, error: yearError } = await supabase.storage
+            .from(BUCKET_NAME)
+            .list('');
+
+        if (yearError) {
+            console.error('Failed to list years:', yearError.message);
+            return result;
+        }
+
+        for (const year of years || []) {
+            if (!year.name) continue;
+
+            const { data: months, error: monthError } = await supabase.storage
+                .from('excel-files')
+                .list(year.name);
+
+            if (monthError) {
+                console.warn(`Failed to list months for ${year.name}:`, monthError.message);
+                continue;
+            }
+
+            result[year.name] = (months || [])
+                .filter(m => m.name)
+                .map(m => m.name)
+                .sort();
+        }
+
+        return result;
+    }
 };
