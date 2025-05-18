@@ -22,7 +22,6 @@
     "baseUrl": "src",
     "paths": {
       "@Interfaces/*": ["common/interfaces/*"],
-      "@Components/*": ["components/*"],
     }
   },
   "include": [

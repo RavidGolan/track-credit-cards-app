@@ -1,9 +1,9 @@
 import React from 'react';
 import ITransaction from "@Interfaces/ITransaction";
-import {CreditCardIssuers} from "../common/enums/CreditCardIssuers";
+import {CreditCardIssuers} from "../../common/enums/CreditCardIssuers";
 import ICreditCardIssuersService from "@Interfaces/ICreditCardIssuersService";
-import {CreditCardsServices} from "../services/CreditCardsServices";
-import {CreditCards} from "../common/enums/CreditCards";
+import {CreditCardsServices} from "../../services/CreditCardsServices";
+import {CreditCards} from "../../common/enums/CreditCards";
 
 interface FileReaderComponentProps {
     creditCard: CreditCards,

@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react';
-import FileReaderComponent from './FileReaderComponent';
+import FileReaderComponent from '../FileReaderComponent/FileReaderComponent';
 import ITransaction from "@Interfaces/ITransaction";
-import {CreditCards} from "../common/enums/CreditCards";
-import {CreditCardIssuers} from "../common/enums/CreditCardIssuers";
-import TransactionsAgGridComponent from "./TransactionsAgGridComponent/TransactionsAgGridComponent";
-import BankTransactionsService from "../services/BankTransactionsService";
-import CategorySummaryTable from "./CategorySummaryTable/CategorySummaryTable";
-import {getVendorCategory} from "../services/supabase/vendorCategoryService";
-import TransactionFileLoader from "./TransactionsFileLoader/TransactionsFileLoader";
+import {CreditCards} from "../../common/enums/CreditCards";
+import {CreditCardIssuers} from "../../common/enums/CreditCardIssuers";
+import TransactionsAgGridComponent from "../TransactionsAgGridComponent/TransactionsAgGridComponent";
+import BankTransactionsService from "../../services/BankTransactionsService";
+import CategorySummaryTable from "../CategorySummaryTable/CategorySummaryTable";
+import {getVendorCategory} from "../../services/supabase/vendorCategoryService";
+import TransactionFileLoader from "../TransactionsFileLoader/TransactionsFileLoader";
 
 const TransactionViewerComponent: React.FC = () => {
     const [transactions, setTransactions] = useState<ITransaction[]>([]); // Use an array to hold data from multiple cards
