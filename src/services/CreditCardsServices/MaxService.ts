@@ -6,18 +6,19 @@ import {TransactionType} from "../../common/enums/TransactionType";
 export class MaxService implements ICreditCardIssuersService {
 
     transformRawData(rawRows: any[]): ITransaction[] {
+        const dateKey = Object.keys(rawRows[0])[0];
         return rawRows
-            .filter(row => row["__EMPTY"] && row["__EMPTY"] !== "תאריך עסקה" && row["__EMPTY_4"])
+            .filter(row => row["__EMPTY_3"] && !isNaN(Number(row["__EMPTY_3"])))
             .map(row => {
                 return {
                     transactionType: TransactionType.CHANGING,
-                    date: row["__EMPTY"] || "",
-                    vendor: row["__EMPTY_1"] || "",
+                    date: row[dateKey] || "",
+                    vendor: row["__EMPTY"] || "",
                     // category: row[""] || "",
-                    amount: parseFloat(row["__EMPTY_6"]),
-                    type: row["__EMPTY_3"] || "",
-                    details: row["__EMPTY_9"] || "",
-                    billedAmount: parseFloat(row["__EMPTY_4"]),
+                    amount: parseFloat(row["__EMPTY_5"]),
+                    type: row["__EMPTY_2"] || "",
+                    details: row["__EMPTY_8"] || "",
+                    billedAmount: parseFloat(row["__EMPTY_3"]),
                 };
             });
     }
