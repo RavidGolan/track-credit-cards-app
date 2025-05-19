@@ -65,6 +65,16 @@ export default class BankTransactionsService {
         }
         bankTransactions.push(investmentInLand);
 
+        const talHealthCare: ITransaction = {
+            source: "Bank Leumi",
+            transactionType: TransactionType.CONSTANT,
+            date: "10",
+            vendor: "מכבי-י",
+            amount: 121,
+            billedAmount: 121
+        }
+        bankTransactions.push(talHealthCare);
+
         return bankTransactions;
     }
 }

@@ -6,11 +6,11 @@ import {TransactionType} from "../../common/enums/TransactionType";
 
 interface CategorySummaryTableProps {
     transactions: ITransaction[];
+    title?: string;
 }
 
 interface SummaryRow {
     category: Category | 'ללא קטגוריה';
-    transactionType: TransactionType | 'לא ידוע';
     total: number;
 }
 
@@ -49,28 +49,53 @@ const groupByCategoryAndType = (transactions: ITransaction[]): SummaryRow[] => {
     });
 };
 
-const CategorySummaryTable: React.FC<CategorySummaryTableProps> = ({ transactions }) => {
+const groupByCategory = (transactions: ITransaction[]): SummaryRow[] => {
+    const totals: Record<string, number> = {};
+
+    for (const tx of transactions) {
+        const category = tx.category || 'ללא קטגוריה';
+        const amount = tx.billedAmount ?? 0;
+        totals[category] = (totals[category] || 0) + amount;
+    }
+
+    const summary = Object.entries(totals).map(([category, total]) => {
+        return {
+            category: category as Category | 'ללא קטגוריה',
+            total,
+        };
+    });
+
+    return [...summary].sort((a, b) => {
+        if (a.category === 'ללא קטגוריה') return 1;
+        if (b.category === 'ללא קטגוריה') return -1;
+        return a.category.localeCompare(b.category, 'he');
+    });
+};
+
+const CategorySummaryTable: React.FC<CategorySummaryTableProps> = ({ transactions, title}) => {
     const summary = groupByCategoryAndType(transactions);
 
     return (
         <div className="category-summary-container" dir="rtl">
-            <h3 className="category-summary-title">סיכום לפי קטגוריה</h3>
+            {title && (<h3 className="category-summary-title">{title}</h3>)}
             <table className="category-summary-table">
                 <thead>
                 <tr>
                     <th>קטגוריה</th>
-                    <th>סוג עסקה</th>
                     <th>סה״כ</th>
                 </tr>
                 </thead>
                 <tbody>
-                {summary.map(({ category, transactionType, total }) => (
-                    <tr key={`${category}-${transactionType}`}>
+                {summary.map(({ category, total }) => (
+                    <tr key={`${category}`}>
                         <td>{category}</td>
-                        <td>{transactionType}</td>
                         <td className="amount">{formatCurrency(total)}</td>
                     </tr>
                 ))}
+                <tr className={"category-summary-sum"}>
+                    <td>סה״כ</td>
+                    <td>{formatCurrency(Object.values(summary).reduce((sum, value) => sum + value.total, 0))}</td>
+                </tr>
                 </tbody>
             </table>
         </div>

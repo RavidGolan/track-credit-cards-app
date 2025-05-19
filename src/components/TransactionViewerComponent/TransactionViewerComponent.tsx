@@ -1,13 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import FileReaderComponent from '../FileReaderComponent/FileReaderComponent';
 import ITransaction from "@Interfaces/ITransaction";
-import {CreditCards} from "../../common/enums/CreditCards";
-import {CreditCardIssuers} from "../../common/enums/CreditCardIssuers";
 import TransactionsAgGridComponent from "../TransactionsAgGridComponent/TransactionsAgGridComponent";
 import BankTransactionsService from "../../services/BankTransactionsService";
 import CategorySummaryTable from "../CategorySummaryTable/CategorySummaryTable";
 import {getVendorCategory} from "../../services/supabase/vendorCategoryService";
 import TransactionFileLoader from "../TransactionsFileLoader/TransactionsFileLoader";
+import {TransactionType} from "../../common/enums/TransactionType";
+import './TransactionViewerComponent.css';
 
 const TransactionViewerComponent: React.FC = () => {
     const [transactions, setTransactions] = useState<ITransaction[]>([]); // Use an array to hold data from multiple cards
@@ -47,7 +46,10 @@ const TransactionViewerComponent: React.FC = () => {
     return (
         <div>
             <TransactionFileLoader onData={handleNewData} />
-            <CategorySummaryTable transactions={transactions} />
+            <div className={"category-summaries-container"}>
+                <CategorySummaryTable title={"סיכום הוצאות קבועות"} transactions={transactions.filter(transaction => transaction.transactionType === TransactionType.CONSTANT)} />
+                <CategorySummaryTable title={"סיכום הוצאות משתנות"} transactions={transactions.filter(transaction => transaction.transactionType === TransactionType.CHANGING)} />
+            </div>
             {/* Render table only if there are transactions */}
             {transactions.length > 0 && <TransactionsAgGridComponent transactions={transactions} />}
         </div>

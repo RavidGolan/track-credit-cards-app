@@ -12,7 +12,7 @@ interface Props {
 }
 
 const TransactionFileLoader: React.FC<Props> = ({ onData }) => {
-    const [mode, setMode] = useState<'byMonth' | 'full'>('full');
+    const [mode, setMode] = useState<'byMonth' | 'full'>('byMonth');
 
     const [creditCard, setCreditCard] = useState<CreditCards | ''>('');
     const [year, setYear] = useState<string | ''>('');
@@ -96,7 +96,7 @@ const TransactionFileLoader: React.FC<Props> = ({ onData }) => {
                         checked={mode === 'byMonth'}
                         onChange={() => setMode('byMonth')}
                     />
-                    לפי חודש בלבד
+                    לפי שנה + חודש
                 </label>
 
                 <label>
