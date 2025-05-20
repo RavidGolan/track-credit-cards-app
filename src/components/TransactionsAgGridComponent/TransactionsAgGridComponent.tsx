@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {AgGridReact,} from 'ag-grid-react';
-import {GridApi, GridReadyEvent, RowApiModule} from 'ag-grid-community';
+import {CellStyleModule, GridApi, GridReadyEvent, RowApiModule, RowAutoHeightModule} from 'ag-grid-community';
 
 import {
     ClientSideRowModelModule,
@@ -38,7 +38,9 @@ ModuleRegistry.registerModules([
     NumberFilterModule,
     // SetFilterModule,
     SelectEditorModule,
-    RowApiModule
+    RowApiModule,
+    CellStyleModule,
+    RowAutoHeightModule
 ]);
 
 interface TransactionsAgGridComponentProps {
@@ -72,10 +74,8 @@ const TransactionsAgGridComponent: React.FC<TransactionsAgGridComponentProps> = 
 
     // 3. Column definitions
     const columnDefs: ColDef<ITransaction>[] = [
-        { field: 'source', headerName: 'Credit Card', sortable: true, filter: true },
-        { field: 'transactionType', headerName: 'Constant / Changing', sortable: true, filter: true },
-        { field: 'date', headerName: 'Date', sortable: true, filter: true },
-        { field: 'vendor', headerName: 'Vendor', sortable: true, filter: true },
+        { field: 'date', headerName: 'Date', sortable: true, filter: true, cellStyle: { whiteSpace: 'pre-wrap' }, autoHeight: true },
+        { field: 'transactionType', headerName: 'Constant / Changing', sortable: true, filter: true, cellStyle: { whiteSpace: 'pre-wrap' }, autoHeight: true },
         {
             field: 'category',
             headerName: 'Category',
@@ -86,7 +86,10 @@ const TransactionsAgGridComponent: React.FC<TransactionsAgGridComponentProps> = 
             cellEditorParams: {
                 values: CATEGORY_OPTIONS,
             },
+            cellStyle: { whiteSpace: 'pre-wrap' },
+            autoHeight: true
         },
+        { field: 'vendor', headerName: 'Vendor', sortable: true, filter: true, cellStyle: { whiteSpace: 'pre-wrap' }, autoHeight: true },
         {
             field: 'billedAmount',
             headerName: 'Billed Amount',
@@ -96,7 +99,10 @@ const TransactionsAgGridComponent: React.FC<TransactionsAgGridComponentProps> = 
                 typeof value === 'number'
                     ? value.toLocaleString('en-US')
                     : value,
+            cellStyle: { whiteSpace: 'pre-wrap' },
+            autoHeight: true
         },
+        { field: 'source', headerName: 'Credit Card', sortable: true, filter: true, cellStyle: { whiteSpace: 'pre-wrap' }, autoHeight: true },
         {
             field: 'amount',
             headerName: 'Amount',
@@ -106,9 +112,11 @@ const TransactionsAgGridComponent: React.FC<TransactionsAgGridComponentProps> = 
                 typeof value === 'number'
                     ? value.toLocaleString('en-US') // ✅ comma format
                     : value,
+            cellStyle: { whiteSpace: 'pre-wrap' },
+            autoHeight: true
         },
-        { field: 'type', headerName: 'Type', sortable: true, filter: true },
-        { field: 'details', headerName: 'Details', sortable: true, filter: true }
+        { field: 'type', headerName: 'Type', sortable: true, filter: true, cellStyle: { whiteSpace: 'pre-wrap' }, autoHeight: true },
+        { field: 'details', headerName: 'Details', sortable: true, filter: true, cellStyle: { whiteSpace: 'pre-wrap' }, autoHeight: true },
     ];
 
     // 4. Optional row coloring
@@ -173,7 +181,7 @@ const TransactionsAgGridComponent: React.FC<TransactionsAgGridComponentProps> = 
             <AgGridReact<ITransaction>
                 rowData={rowData}
                 columnDefs={columnDefs}
-                getRowStyle={getRowStyle}
+                // getRowStyle={getRowStyle}
                 animateRows={true}
                 pagination={true}
                 rowModelType="clientSide"
