@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import ITransaction from "@Interfaces/ITransaction";
 import TransactionsAgGridComponent from "../TransactionsAgGridComponent/TransactionsAgGridComponent";
 import BankTransactionsService from "../../services/BankTransactionsService";
@@ -14,6 +14,20 @@ const TransactionViewerComponent: React.FC = () => {
     const [filteredCategory, setFilteredCategory] = useState<Category | 'ללא קטגוריה'>();
     const [aggregateKey, setAggregateKey] = useState<keyof ITransaction | undefined>();
 
+    const bankTransactionsRef = useRef<ITransaction[]>([]);
+    // ✅ Load initial transactions on mount
+    useEffect(() => {
+        const init = async () => {
+            const rawTransactions = BankTransactionsService.getTransactions();
+            const enriched = await enrichTransactionsWithCategories(rawTransactions);
+            setTransactions(enriched);
+            bankTransactionsRef.current = enriched;
+        };
+
+        init();
+    }, []);
+
+
     const TRANSACTION_KEYS: (keyof ITransaction)[] = [
         'vendor',
         'category',
@@ -26,10 +40,6 @@ const TransactionViewerComponent: React.FC = () => {
         'details',
     ];
 
-    function loadInitialTransactions(): ITransaction[] {
-        return BankTransactionsService.getTransactions(); // For now, just return empty
-    }
-
     const enrichTransactionsWithCategories = async (
         txs: ITransaction[]
     ): Promise<ITransaction[]> => {
@@ -41,22 +51,11 @@ const TransactionViewerComponent: React.FC = () => {
         );
     };
 
-    // ✅ Load initial transactions on mount
-    useEffect(() => {
-        const init = async () => {
-            const rawTransactions = loadInitialTransactions();
-            const enriched = await enrichTransactionsWithCategories(rawTransactions);
-            setTransactions(enriched);
-        };
-
-        init();
-    }, []);
-
     // Update the onData handler to append new transactions
-    const handleNewData = async (newTransactions: ITransaction[]) => {
+    const handleNewData = useCallback(async (newTransactions: ITransaction[]) => {
         const enriched = await enrichTransactionsWithCategories(newTransactions);
-        setTransactions((prev) => [...prev, ...enriched]);
-    };
+        setTransactions([...bankTransactionsRef.current, ...enriched]);
+    },[]);
 
     function aggregateTransactionsByKey<K extends keyof ITransaction>(
         transactions: ITransaction[],
@@ -100,9 +99,6 @@ const TransactionViewerComponent: React.FC = () => {
             return aggregated as ITransaction;
         });
     }
-
-
-
 
     const displayedTransactions = useMemo(() => {
         if (!aggregateKey) return transactions;

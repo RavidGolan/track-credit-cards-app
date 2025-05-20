@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import './TransactionFileLoader.css';
 import ITransaction from "@Interfaces/ITransaction";
 import {CreditCards} from "../../common/enums/CreditCards";
@@ -21,68 +21,90 @@ const TransactionFileLoader: React.FC<Props> = ({ onData }) => {
     const [availableYearsAndMonths, setAvailableYearsAndMonths] = useState<Record<string, string[]>>({})
 
     useEffect(() => {
-        const load = async () => {
+        const loadYearsAndMonths = async () => {
             const folderMap = await StorageService.getAvailableYearsAndMonths();
             setAvailableYearsAndMonths(folderMap);
+
+            const sortedYears = Object.keys(folderMap).sort((a, b) => Number(a) - Number(b));
+            const latestYear = sortedYears.at(-1) || '';
+            const sortedMonths = folderMap[latestYear]?.sort((a, b) => Number(a) - Number(b)) || [];
+            const latestMonth = sortedMonths.at(-1) || '';
+
+            // Set state, but don't load yet
+            setYear(latestYear);
+            setMonth(latestMonth);
         };
-        load();
+        loadYearsAndMonths();
     }, []);
 
-    const loadTransactions = async (currentCreditCard: CreditCards) => {
-        const folder = `${year}/${month.toString()}`;
-        const filename = `${CreditCardToNumberMap[currentCreditCard]}_${month}_${year}.xlsx`;
-        const path = `${folder}/${filename}`;
+    const handleLoad = useCallback(async () => {
 
-        try {
-            setStatus('טוען את הקובץ מהאחסון...');
-            const data = await StorageService.parseExcelFileFromStorage(path);
-            setStatus('✅ הקובץ נטען בהצלחה');
+        const loadTransactions = async (currentCreditCard: CreditCards): Promise<ITransaction[]> => {
+            const folder = `${year}/${month.toString()}`;
+            const filename = `${CreditCardToNumberMap[currentCreditCard]}_${month}_${year}.xlsx`;
+            const path = `${folder}/${filename}`;
+
+            try {
+                setStatus('טוען את הקובץ מהאחסון...');
+                const data = await StorageService.parseExcelFileFromStorage(path);
+                setStatus('✅ הקובץ נטען בהצלחה');
 
 
-            const service: ICreditCardIssuersService | undefined = CreditCardsServices[CreditCardToIssuerMap[currentCreditCard]];
-            if (!service) {
-                console.warn(`No service found for vendor: ${currentCreditCard}`);
-                return;
+                const service: ICreditCardIssuersService | undefined = CreditCardsServices[CreditCardToIssuerMap[currentCreditCard]];
+                if (!service) {
+                    console.warn(`No service found for vendor: ${currentCreditCard}`);
+                    return [];
+                }
+
+                let transactions = service.transformRawData(data);
+                const transactionsWithSource = transactions.map((transaction) => ({
+                    ...transaction,
+                    source: currentCreditCard
+                }));
+                console.log(transactionsWithSource);
+                return(transactionsWithSource);
+            } catch (err: any) {
+                console.error(err);
+                setStatus('❌ הקובץ לא נמצא או שגיאה בקריאה');
+                return([]);
             }
-
-            let transactions = service.transformRawData(data);
-            const transactionsWithSource = transactions.map((transaction) => ({
-                ...transaction,
-                source: currentCreditCard
-            }));
-            console.log(transactionsWithSource);
-            onData(transactionsWithSource);
-        } catch (err: any) {
-            console.error(err);
-            setStatus('❌ הקובץ לא נמצא או שגיאה בקריאה');
-            onData([]);
         }
-    }
 
-    const handleLoad = async () => {
         if (mode === 'byMonth') {
             if (!year || !month) {
                 setStatus('יש לבחור שנה וחודש');
                 return;
             }
 
-            await Promise.all(
-                Object.values(CreditCards).map(card =>
+            const all = await Promise.all(
+                Object.values(CreditCards).map(async card =>
                     loadTransactions(card as CreditCards)
                 )
             );
+            onData(all.flat());
+
         } else {
             if (!creditCard || !year || !month) {
                 setStatus('יש לבחור כרטיס, שנה וחודש');
                 return;
             }
 
-            await loadTransactions(creditCard);
+            onData(await loadTransactions(creditCard));
         }
-    };
+    }, [mode, year, month, creditCard, onData]);
 
-    const years = useMemo(() => Object.keys(availableYearsAndMonths).sort(), [availableYearsAndMonths]);
-    const months = availableYearsAndMonths[year] || [];
+    useEffect(() => {
+        // Only load if both are set (and not during initial undefined state)
+        if (mode === 'byMonth' && year && month) {
+            handleLoad();
+        } else if (mode === 'full' && year && month && creditCard) {
+            handleLoad();
+        }
+    }, [year, month, creditCard, mode, handleLoad]);
+
+    const years = useMemo(() => Object.keys(availableYearsAndMonths).sort((a, b) => Number(a) - Number(b)), [availableYearsAndMonths]);
+    const months = (availableYearsAndMonths[year] || []).sort((a, b) => Number(a) - Number(b));
+
 
     return (
         <div className="transaction-file-loader-container" dir="rtl">
@@ -145,7 +167,6 @@ const TransactionFileLoader: React.FC<Props> = ({ onData }) => {
                 </label>
             </div>
 
-            <button className="transaction-file-loader-button" onClick={handleLoad}>טען</button>
             <p className="transaction-file-loader-status">{status}</p>
         </div>
     );

@@ -171,8 +171,6 @@ const TransactionsAgGridComponent: React.FC<TransactionsAgGridComponentProps> = 
                 gridApi.onFilterChanged();
             }
         });
-        // @ts-ignore
-        console.log(gridApi.getDisplayedRowAtIndex(0)?.data.category);
     }, [filteredCategory, gridApi]);
 
 
@@ -181,7 +179,7 @@ const TransactionsAgGridComponent: React.FC<TransactionsAgGridComponentProps> = 
             <AgGridReact<ITransaction>
                 rowData={rowData}
                 columnDefs={columnDefs}
-                // getRowStyle={getRowStyle}
+                getRowStyle={getRowStyle}
                 animateRows={true}
                 pagination={true}
                 rowModelType="clientSide"
