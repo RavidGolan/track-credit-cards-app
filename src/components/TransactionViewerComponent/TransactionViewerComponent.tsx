@@ -7,9 +7,11 @@ import {getVendorCategory} from "../../services/supabase/vendorCategoryService";
 import TransactionFileLoader from "../TransactionsFileLoader/TransactionsFileLoader";
 import {TransactionType} from "../../common/enums/TransactionType";
 import './TransactionViewerComponent.css';
+import {Category} from "../../common/enums/Category";
 
 const TransactionViewerComponent: React.FC = () => {
     const [transactions, setTransactions] = useState<ITransaction[]>([]); // Use an array to hold data from multiple cards
+    const [filteredCategory, setFilteredCategory] = useState<Category | 'ללא קטגוריה'>(); // Use an array to hold data from multiple cards
 
     function loadInitialTransactions(): ITransaction[] {
         return BankTransactionsService.getTransactions(); // For now, just return empty
@@ -47,11 +49,15 @@ const TransactionViewerComponent: React.FC = () => {
         <div>
             <TransactionFileLoader onData={handleNewData} />
             <div className={"category-summaries-container"}>
-                <CategorySummaryTable title={"סיכום הוצאות קבועות"} transactions={transactions.filter(transaction => transaction.transactionType === TransactionType.CONSTANT)} />
-                <CategorySummaryTable title={"סיכום הוצאות משתנות"} transactions={transactions.filter(transaction => transaction.transactionType === TransactionType.CHANGING)} />
+                <CategorySummaryTable title={"סיכום הוצאות קבועות"}
+                                      transactions={transactions.filter(transaction => transaction.transactionType === TransactionType.CONSTANT)}
+                                      onCategoryClick={setFilteredCategory} />
+                <CategorySummaryTable title={"סיכום הוצאות משתנות"}
+                                      transactions={transactions.filter(transaction => transaction.transactionType === TransactionType.CHANGING)}
+                                      onCategoryClick={setFilteredCategory} />
             </div>
             {/* Render table only if there are transactions */}
-            {transactions.length > 0 && <TransactionsAgGridComponent transactions={transactions} />}
+            {transactions.length > 0 && <TransactionsAgGridComponent transactions={transactions} filteredCategory={filteredCategory} />}
         </div>
     );
 };

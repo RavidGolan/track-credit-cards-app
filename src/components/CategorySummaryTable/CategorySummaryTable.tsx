@@ -7,6 +7,7 @@ import {TransactionType} from "../../common/enums/TransactionType";
 interface CategorySummaryTableProps {
     transactions: ITransaction[];
     title?: string;
+    onCategoryClick?: (category: Category | 'ללא קטגוריה' | undefined) => void;
 }
 
 interface SummaryRow {
@@ -72,7 +73,7 @@ const groupByCategory = (transactions: ITransaction[]): SummaryRow[] => {
     });
 };
 
-const CategorySummaryTable: React.FC<CategorySummaryTableProps> = ({ transactions, title}) => {
+const CategorySummaryTable: React.FC<CategorySummaryTableProps> = ({ transactions, title, onCategoryClick}) => {
     const summary = groupByCategoryAndType(transactions);
 
     return (
@@ -88,12 +89,16 @@ const CategorySummaryTable: React.FC<CategorySummaryTableProps> = ({ transaction
                 <tbody>
                 {summary.map(({ category, total }) => (
                     <tr key={`${category}`}>
-                        <td>{category}</td>
+                        <td onClick={() => onCategoryClick?.(category)} className="clickable-category">
+                            {category}
+                        </td>
                         <td className="amount">{formatCurrency(total)}</td>
                     </tr>
                 ))}
                 <tr className={"category-summary-sum"}>
-                    <td>סה״כ</td>
+                    <td onClick={() => onCategoryClick?.(undefined)} className="clickable-category">
+                        סה״כ
+                    </td>
                     <td>{formatCurrency(Object.values(summary).reduce((sum, value) => sum + value.total, 0))}</td>
                 </tr>
                 </tbody>
