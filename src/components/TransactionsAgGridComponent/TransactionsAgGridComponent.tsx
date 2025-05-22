@@ -26,7 +26,9 @@ import {
 } from '../../services/supabase/vendorCategoryService';
 import {TransactionType} from "../../common/enums/TransactionType";
 import {Category} from "../../common/enums/Category";
+import {PivotModule, RowGroupingModule, RowGroupingPanelModule, TreeDataModule} from "ag-grid-enterprise";
 // import {SetFilterModule} from "ag-grid-enterprise";
+import './TransactionsAgGridComponent.css';
 
 // Register AG Grid modules
 ModuleRegistry.registerModules([
@@ -40,7 +42,8 @@ ModuleRegistry.registerModules([
     SelectEditorModule,
     RowApiModule,
     CellStyleModule,
-    RowAutoHeightModule
+    RowAutoHeightModule,
+    RowGroupingModule, PivotModule, TreeDataModule, RowGroupingPanelModule
 ]);
 
 interface TransactionsAgGridComponentProps {
@@ -51,6 +54,24 @@ interface TransactionsAgGridComponentProps {
 const TransactionsAgGridComponent: React.FC<TransactionsAgGridComponentProps> = ({ transactions, filteredCategory }) => {
     const [rowData, setRowData] = useState<ITransaction[]>([]);
     const [gridApi, setGridApi] = useState<GridApi<ITransaction>>();
+    const [aggregateKey, setAggregateKey] = useState<keyof ITransaction  | 'ללא אגרגציה'>('ללא אגרגציה');
+
+    const customTextAgg = (params: any) => {
+        const unique = new Set(params.values.filter(Boolean));
+        return Array.from(unique).join(', ');
+    };
+
+    useEffect(() => {
+        if (!gridApi || !aggregateKey) return;
+
+        if (aggregateKey !== 'ללא אגרגציה') {
+            gridApi.setRowGroupColumns([aggregateKey as keyof ITransaction]);
+        } else {
+            gridApi.setRowGroupColumns([]); // ❌ Clear grouping
+        }
+
+        gridApi.setRowGroupColumns([aggregateKey as keyof ITransaction]);
+    }, [gridApi, aggregateKey]);
 
     // 1. Load vendor-category mapping and patch transactions
     useEffect(() => {
@@ -74,7 +95,7 @@ const TransactionsAgGridComponent: React.FC<TransactionsAgGridComponentProps> = 
 
     // 3. Column definitions
     const columnDefs: ColDef<ITransaction>[] = [
-        { field: 'date', headerName: 'Date', sortable: true, filter: true, cellStyle: { whiteSpace: 'pre-wrap' }, autoHeight: true },
+        { field: 'date', headerName: 'Date', sortable: true, filter: true, cellStyle: { whiteSpace: 'pre-wrap' }, autoHeight: true, aggFunc: customTextAgg },
         { field: 'transactionType', headerName: 'Constant / Changing', sortable: true, filter: true, cellStyle: { whiteSpace: 'pre-wrap' }, autoHeight: true },
         {
             field: 'category',
@@ -87,7 +108,7 @@ const TransactionsAgGridComponent: React.FC<TransactionsAgGridComponentProps> = 
                 values: CATEGORY_OPTIONS,
             },
             cellStyle: { whiteSpace: 'pre-wrap' },
-            autoHeight: true
+            autoHeight: true, aggFunc: customTextAgg
         },
         { field: 'vendor', headerName: 'Vendor', sortable: true, filter: true, cellStyle: { whiteSpace: 'pre-wrap' }, autoHeight: true },
         {
@@ -100,9 +121,10 @@ const TransactionsAgGridComponent: React.FC<TransactionsAgGridComponentProps> = 
                     ? value.toLocaleString('en-US')
                     : value,
             cellStyle: { whiteSpace: 'pre-wrap' },
-            autoHeight: true
+            autoHeight: true,
+            aggFunc: 'sum'
         },
-        { field: 'source', headerName: 'Credit Card', sortable: true, filter: true, cellStyle: { whiteSpace: 'pre-wrap' }, autoHeight: true },
+        { field: 'source', headerName: 'Credit Card', sortable: true, filter: true, cellStyle: { whiteSpace: 'pre-wrap' }, autoHeight: true, aggFunc: customTextAgg },
         {
             field: 'amount',
             headerName: 'Amount',
@@ -113,10 +135,11 @@ const TransactionsAgGridComponent: React.FC<TransactionsAgGridComponentProps> = 
                     ? value.toLocaleString('en-US') // ✅ comma format
                     : value,
             cellStyle: { whiteSpace: 'pre-wrap' },
-            autoHeight: true
+            autoHeight: true,
+            aggFunc: 'sum'
         },
-        { field: 'type', headerName: 'Type', sortable: true, filter: true, cellStyle: { whiteSpace: 'pre-wrap' }, autoHeight: true },
-        { field: 'details', headerName: 'Details', sortable: true, filter: true, cellStyle: { whiteSpace: 'pre-wrap' }, autoHeight: true },
+        { field: 'type', headerName: 'Type', sortable: true, filter: true, cellStyle: { whiteSpace: 'pre-wrap' }, autoHeight: true, aggFunc: customTextAgg },
+        { field: 'details', headerName: 'Details', sortable: true, filter: true, cellStyle: { whiteSpace: 'pre-wrap' }, autoHeight: true, aggFunc: customTextAgg },
     ];
 
     // 4. Optional row coloring
@@ -173,19 +196,58 @@ const TransactionsAgGridComponent: React.FC<TransactionsAgGridComponentProps> = 
         });
     }, [filteredCategory, gridApi]);
 
+    const TRANSACTION_KEYS: (keyof ITransaction)[] = [
+        'vendor',
+        'category',
+        'amount',
+        'billedAmount',
+        'date',
+        'source',
+        'transactionType',
+        'type',
+        'details',
+    ];
 
     return (
-        <div className="ag-theme-quartz" style={{ height: 600, width: '100%' }}>
-            <AgGridReact<ITransaction>
-                rowData={rowData}
-                columnDefs={columnDefs}
-                getRowStyle={getRowStyle}
-                animateRows={true}
-                pagination={true}
-                rowModelType="clientSide"
-                onCellValueChanged={handleCellValueChanged}
-                onGridReady={onGridReady}
-            />
+        <div>
+            <select
+                value={aggregateKey || ''}
+                onChange={(e) => {
+                    const value = e.target.value;
+                    setAggregateKey(value as keyof ITransaction);
+                }}
+            >
+                <option value="ללא אגרגציה">ללא אגרגציה</option>
+                {TRANSACTION_KEYS.map((key) => (
+                    <option key={key} value={key}>
+                        {key}
+                    </option>
+                ))}
+            </select>
+            <label>קבץ לפי</label>
+            <div className="ag-theme-quartz transactions-table">
+                <AgGridReact<ITransaction>
+                    rowData={rowData}
+                    columnDefs={columnDefs}
+                    getRowStyle={getRowStyle}
+                    animateRows={true}
+                    pagination={true}
+                    rowModelType="clientSide"
+                    onCellValueChanged={handleCellValueChanged}
+                    onGridReady={onGridReady}
+                    rowGroupPanelShow="always"
+                    groupDisplayType="singleColumn"
+                    groupDefaultExpanded={0} // All groups collapsed initially
+                    autoGroupColumnDef={{
+                            headerName: 'Group',
+                            field: aggregateKey as keyof ITransaction,
+                            cellRendererParams: {
+                                suppressCount: false,
+                            },
+                        }}
+                    />
+                </div>
+
         </div>
     );
 };
