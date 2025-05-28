@@ -37,7 +37,7 @@ import ITransaction from '@Interfaces/ITransaction';
 import { Category } from '../../common/enums/Category';
 import { TransactionType } from '../../common/enums/TransactionType';
 import { getVendorCategory, setVendorCategory } from '../../services/supabase/vendorCategoryService';
-import {transactionsColumnDefs} from "./TransactionsColumnDefs";
+import {defaultTransactionsColumnDefs, transactionsColumnDefs} from "./TransactionsColumnDefs";
 
 // Register required AG Grid modules (both Community and Enterprise)
 ModuleRegistry.registerModules([
@@ -70,7 +70,7 @@ const TransactionsAgGridComponent: React.FC<
   const [gridApi, setGridApi] = useState<GridApi<ITransaction>>();
   const [aggregateKey, setAggregateKey] = useState<
       keyof ITransaction | 'ללא אגרגציה'
-  >('category');
+  >();
 
   useEffect(() => {
     if (!gridApi || !aggregateKey) return;
@@ -210,6 +210,7 @@ const TransactionsAgGridComponent: React.FC<
               }}
               domLayout="autoHeight"
               suppressHorizontalScroll={false}
+              defaultColDef={defaultTransactionsColumnDefs}
           />
         </div>
       </div>
