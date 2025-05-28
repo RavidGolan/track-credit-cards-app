@@ -27,6 +27,7 @@ export const transactionsColumnDefs: ColDef<ITransaction>[] = [
         filter: true,
         cellStyle: {whiteSpace: 'pre-wrap'},
         autoHeight: true,
+        aggFunc: customTextAgg,
     },
     {
         field: 'category',
@@ -90,7 +91,6 @@ export const transactionsColumnDefs: ColDef<ITransaction>[] = [
         filter: true,
         cellStyle: {whiteSpace: 'pre-wrap'},
         autoHeight: true,
-        aggFunc: customTextAgg,
     },
     {
         field: 'details',
