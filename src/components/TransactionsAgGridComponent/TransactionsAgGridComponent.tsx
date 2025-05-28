@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { AgGridReact } from 'ag-grid-react';
+
+// AG Grid Community
 import {
   CellStyleModule,
-  GridApi,
-  GridReadyEvent,
-  RowApiModule,
-  RowAutoHeightModule,
-} from 'ag-grid-community';
-
-import {
   ClientSideRowModelModule,
   ColDef,
+  GridApi,
+  GridReadyEvent,
   ModuleRegistry,
   NumberFilterModule,
   PaginationModule,
+  RowApiModule,
+  RowAutoHeightModule,
   RowClassParams,
   RowStyle,
   RowStyleModule,
@@ -22,39 +21,37 @@ import {
   ValidationModule,
 } from 'ag-grid-community';
 
-// import {SetFilterModule} from 'ag-grid-enterprise';
-
-import 'ag-grid-community/styles/ag-theme-quartz.css';
-
-import ITransaction from '@Interfaces/ITransaction';
-import {
-  getVendorCategory,
-  setVendorCategory,
-} from '../../services/supabase/vendorCategoryService';
-import { TransactionType } from '../../common/enums/TransactionType';
-import { Category } from '../../common/enums/Category';
+// AG Grid Enterprise
 import {
   PivotModule,
   RowGroupingModule,
   RowGroupingPanelModule,
   TreeDataModule,
+    // SetFilterModule
 } from 'ag-grid-enterprise';
-// import {SetFilterModule} from "ag-grid-enterprise";
-import './TransactionsAgGridComponent.css';
 
-// Register AG Grid modules
+// AG Grid styles
+import 'ag-grid-community/styles/ag-theme-quartz.css';
+
+// App-specific
+import ITransaction from '@Interfaces/ITransaction';
+import { Category } from '../../common/enums/Category';
+import { TransactionType } from '../../common/enums/TransactionType';
+import { getVendorCategory, setVendorCategory } from '../../services/supabase/vendorCategoryService';
+
+// Register required AG Grid modules (both Community and Enterprise)
 ModuleRegistry.registerModules([
   ClientSideRowModelModule,
+  RowApiModule,
+  RowAutoHeightModule,
+  PaginationModule,
+  NumberFilterModule,
+  TextFilterModule,
+  SelectEditorModule,
+  // SetFilterModule,
   ValidationModule,
   RowStyleModule,
-  PaginationModule,
-  TextFilterModule,
-  NumberFilterModule,
-  // SetFilterModule,
-  SelectEditorModule,
-  RowApiModule,
   CellStyleModule,
-  RowAutoHeightModule,
   RowGroupingModule,
   PivotModule,
   TreeDataModule,
@@ -73,7 +70,7 @@ const TransactionsAgGridComponent: React.FC<
   const [gridApi, setGridApi] = useState<GridApi<ITransaction>>();
   const [aggregateKey, setAggregateKey] = useState<
       keyof ITransaction | 'ללא אגרגציה'
-  >('ללא אגרגציה');
+  >('category');
 
   const customTextAgg = (params: any) => {
     const unique = new Set(params.values.filter(Boolean));
@@ -293,7 +290,7 @@ const TransactionsAgGridComponent: React.FC<
           ))}
         </select>
         <label>קבץ לפי</label>
-        <div className="ag-theme-quartz transactions-table">
+        <div className="ag-theme-quartz">
           <AgGridReact<ITransaction>
               rowData={rowData}
               columnDefs={columnDefs}
@@ -313,6 +310,8 @@ const TransactionsAgGridComponent: React.FC<
                   suppressCount: false,
                 },
               }}
+              domLayout="autoHeight"
+              suppressHorizontalScroll={false}
           />
         </div>
       </div>
