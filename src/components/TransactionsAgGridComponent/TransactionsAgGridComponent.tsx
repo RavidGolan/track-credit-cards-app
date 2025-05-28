@@ -5,7 +5,6 @@ import { AgGridReact } from 'ag-grid-react';
 import {
   CellStyleModule,
   ClientSideRowModelModule,
-  ColDef,
   GridApi,
   GridReadyEvent,
   ModuleRegistry,
@@ -38,6 +37,7 @@ import ITransaction from '@Interfaces/ITransaction';
 import { Category } from '../../common/enums/Category';
 import { TransactionType } from '../../common/enums/TransactionType';
 import { getVendorCategory, setVendorCategory } from '../../services/supabase/vendorCategoryService';
+import {transactionsColumnDefs} from "./TransactionsColumnDefs";
 
 // Register required AG Grid modules (both Community and Enterprise)
 ModuleRegistry.registerModules([
@@ -72,11 +72,6 @@ const TransactionsAgGridComponent: React.FC<
       keyof ITransaction | 'ללא אגרגציה'
   >('category');
 
-  const customTextAgg = (params: any) => {
-    const unique = new Set(params.values.filter(Boolean));
-    return Array.from(unique).join(', ');
-  };
-
   useEffect(() => {
     if (!gridApi || !aggregateKey) return;
 
@@ -107,103 +102,6 @@ const TransactionsAgGridComponent: React.FC<
 
     enrich();
   }, [transactions]);
-
-  // 2. Category enum options
-  const CATEGORY_OPTIONS = Object.values(Category);
-
-  // 3. Column definitions
-  const columnDefs: ColDef<ITransaction>[] = [
-    {
-      field: 'date',
-      headerName: 'Date',
-      sortable: true,
-      filter: true,
-      cellStyle: {whiteSpace: 'pre-wrap'},
-      autoHeight: true,
-      aggFunc: customTextAgg,
-    },
-    {
-      field: 'transactionType',
-      headerName: 'Constant / Changing',
-      sortable: true,
-      filter: true,
-      cellStyle: {whiteSpace: 'pre-wrap'},
-      autoHeight: true,
-    },
-    {
-      field: 'category',
-      headerName: 'Category',
-      editable: true,
-      sortable: true,
-      filter: true,
-      cellEditor: 'agSelectCellEditor',
-      cellEditorParams: {
-        values: CATEGORY_OPTIONS,
-      },
-      cellStyle: {whiteSpace: 'pre-wrap'},
-      autoHeight: true,
-      aggFunc: customTextAgg,
-    },
-    {
-      field: 'vendor',
-      headerName: 'Vendor',
-      sortable: true,
-      filter: true,
-      cellStyle: {whiteSpace: 'pre-wrap'},
-      autoHeight: true,
-    },
-    {
-      field: 'billedAmount',
-      headerName: 'Billed Amount',
-      sortable: true,
-      filter: true,
-      valueFormatter: ({value}) =>
-          typeof value === 'number' ? value.toLocaleString('en-US') : value,
-      cellStyle: {whiteSpace: 'pre-wrap'},
-      autoHeight: true,
-      aggFunc: 'sum',
-    },
-    {
-      field: 'source',
-      headerName: 'Credit Card',
-      sortable: true,
-      filter: true,
-      cellStyle: {whiteSpace: 'pre-wrap'},
-      autoHeight: true,
-      aggFunc: customTextAgg,
-    },
-    {
-      field: 'amount',
-      headerName: 'Amount',
-      sortable: true,
-      filter: true,
-      valueFormatter: ({value}) =>
-          typeof value === 'number'
-              ? value.toLocaleString('en-US') // ✅ comma format
-              : value,
-      cellStyle: {whiteSpace: 'pre-wrap'},
-      autoHeight: true,
-      aggFunc: 'sum',
-    },
-    {
-      field: 'type',
-      headerName: 'Type',
-      sortable: true,
-      filter: true,
-      cellStyle: {whiteSpace: 'pre-wrap'},
-      autoHeight: true,
-      aggFunc: customTextAgg,
-    },
-    {
-      field: 'details',
-      headerName: 'Details',
-      sortable: true,
-      filter: true,
-      cellStyle: {whiteSpace: 'pre-wrap'},
-      autoHeight: true,
-      aggFunc: customTextAgg,
-    },
-  ];
 
   // 4. Optional row coloring
   const getRowStyle = (
@@ -293,7 +191,7 @@ const TransactionsAgGridComponent: React.FC<
         <div className="ag-theme-quartz">
           <AgGridReact<ITransaction>
               rowData={rowData}
-              columnDefs={columnDefs}
+              columnDefs={transactionsColumnDefs}
               getRowStyle={getRowStyle}
               animateRows={true}
               pagination={true}
