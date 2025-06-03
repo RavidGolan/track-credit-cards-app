@@ -68,21 +68,6 @@ const TransactionsAgGridComponent: React.FC<
 > = ({ transactions, filteredCategory }) => {
   const [rowData, setRowData] = useState<ITransaction[]>([]);
   const [gridApi, setGridApi] = useState<GridApi<ITransaction>>();
-  const [aggregateKey, setAggregateKey] = useState<
-      keyof ITransaction | 'ללא אגרגציה'
-  >();
-
-  useEffect(() => {
-    if (!gridApi || !aggregateKey) return;
-
-    if (aggregateKey !== 'ללא אגרגציה') {
-      gridApi.setRowGroupColumns([aggregateKey as keyof ITransaction]);
-    } else {
-      gridApi.setRowGroupColumns([]); // ❌ Clear grouping
-    }
-
-    gridApi.setRowGroupColumns([aggregateKey as keyof ITransaction]);
-  }, [gridApi, aggregateKey]);
 
   // 1. Load vendor-category mapping and patch transactions
   useEffect(() => {
@@ -159,61 +144,25 @@ const TransactionsAgGridComponent: React.FC<
     });
   }, [filteredCategory, gridApi]);
 
-  const TRANSACTION_KEYS: (keyof ITransaction)[] = [
-    'vendor',
-    'category',
-    'amount',
-    'billedAmount',
-    'date',
-    'source',
-    'transactionType',
-    'type',
-    'details',
-  ];
-
   return (
-      <div>
-        <select
-            value={aggregateKey || ''}
-            onChange={(e) => {
-              const value = e.target.value;
-              setAggregateKey(value as keyof ITransaction);
-            }}
-        >
-          <option value="ללא אגרגציה">ללא אגרגציה</option>
-          {TRANSACTION_KEYS.map((key) => (
-              <option key={key} value={key}>
-                {key}
-              </option>
-          ))}
-        </select>
-        <label>קבץ לפי</label>
-        <div className="ag-theme-quartz">
-          <AgGridReact<ITransaction>
-              rowData={rowData}
-              columnDefs={transactionsColumnDefs}
-              getRowStyle={getRowStyle}
-              animateRows={true}
-              pagination={true}
-              rowModelType="clientSide"
-              onCellValueChanged={handleCellValueChanged}
-              onGridReady={onGridReady}
-              rowGroupPanelShow="always"
-              groupDisplayType="singleColumn"
-              groupDefaultExpanded={0} // All groups collapsed initially
-              autoGroupColumnDef={{
-                headerName: 'Group',
-                field: aggregateKey as keyof ITransaction,
-                cellRendererParams: {
-                  suppressCount: false,
-                },
-              }}
-              domLayout="autoHeight"
-              suppressHorizontalScroll={false}
-              defaultColDef={defaultTransactionsColumnDefs}
-          />
-        </div>
-      </div>
+      <div className="ag-theme-quartz">
+        <AgGridReact<ITransaction>
+            rowData={rowData}
+            columnDefs={transactionsColumnDefs}
+            getRowStyle={getRowStyle}
+            animateRows={true}
+            pagination={true}
+            rowModelType="clientSide"
+            onCellValueChanged={handleCellValueChanged}
+            onGridReady={onGridReady}
+            rowGroupPanelShow="always"
+            groupDisplayType="singleColumn"
+            groupDefaultExpanded={0} // All groups collapsed initially
+            domLayout="autoHeight"
+            suppressHorizontalScroll={false}
+            defaultColDef={defaultTransactionsColumnDefs}
+        />
+    </div>
   );
 };
 
