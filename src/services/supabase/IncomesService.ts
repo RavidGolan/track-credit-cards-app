@@ -20,4 +20,26 @@ export default class IncomesService {
             }));
         }
     }
+
+    static async getIncomesByYearAndMonth(year: number, month: number): Promise<IIncome[]> {
+        // return [];
+
+        const { data, error } = await supabase
+            .from('incomes')
+            .select('*')
+            .eq('year', year)
+            .eq('month', month)
+
+        if (error) {
+            return [];
+        } else {
+            return data.map(row => ({
+                year: row.year,
+                month: row.month,
+                amount: row.amount,
+                // type: row.type as IncomeType
+                type: IncomeType[row.type as keyof typeof IncomeType]
+            }));
+        }
+    }
 }
