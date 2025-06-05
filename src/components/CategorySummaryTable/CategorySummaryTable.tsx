@@ -50,29 +50,6 @@ const groupByCategoryAndType = (transactions: ITransaction[]): SummaryRow[] => {
     });
 };
 
-const groupByCategory = (transactions: ITransaction[]): SummaryRow[] => {
-    const totals: Record<string, number> = {};
-
-    for (const tx of transactions) {
-        const category = tx.category || 'ללא קטגוריה';
-        const amount = tx.billedAmount ?? 0;
-        totals[category] = (totals[category] || 0) + amount;
-    }
-
-    const summary = Object.entries(totals).map(([category, total]) => {
-        return {
-            category: category as Category | 'ללא קטגוריה',
-            total,
-        };
-    });
-
-    return [...summary].sort((a, b) => {
-        if (a.category === 'ללא קטגוריה') return 1;
-        if (b.category === 'ללא קטגוריה') return -1;
-        return a.category.localeCompare(b.category, 'he');
-    });
-};
-
 const CategorySummaryTable: React.FC<CategorySummaryTableProps> = ({ transactions, title, onCategoryClick}) => {
     const summary = groupByCategoryAndType(transactions);
 
