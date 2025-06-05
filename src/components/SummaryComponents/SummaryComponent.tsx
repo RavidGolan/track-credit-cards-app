@@ -6,6 +6,7 @@ import {Category} from "../../common/enums/Category";
 import "./SummaryComponent.css"
 import IncomesComponent from "./IncomesComponent";
 import MonthlySummaryComponent from "./MonthlySummaryComponent";
+import {useSearchParams} from "react-router-dom";
 
 interface SummaryComponentProps {
     transactions: ITransaction[],
@@ -17,6 +18,10 @@ const SummaryComponent: React.FC<SummaryComponentProps> = ({transactions, onCate
     const [sumChangingTransactions, setSumChangingTransactions] = useState<number>(0 );
     const [sumIncomes, setSumIncomes] = useState<number>(0);
 
+    const [searchParams] = useSearchParams();
+    const showIncomes = searchParams.has('showIncomes');
+    console.log("showIncomes: " + showIncomes);
+
     return (
         <div className={"summaries-container"}>
             <CategorySummaryComponent title={"סיכום הוצאות קבועות"}
@@ -27,8 +32,12 @@ const SummaryComponent: React.FC<SummaryComponentProps> = ({transactions, onCate
                                       transactions={transactions.filter(transaction => transaction.transactionType === TransactionType.CHANGING)}
                                       onCategoryClick={onCategoryClick}
                                       sumCalculation={setSumChangingTransactions}/>
-            <IncomesComponent sumCalculation={setSumIncomes}/>
-            <MonthlySummaryComponent sumIncomes={sumIncomes} sumConstantTransactions={sumConstantTransactions} sumChangingTransactions={sumChangingTransactions} />
+            {showIncomes && (
+                <>
+                    <IncomesComponent sumCalculation={setSumIncomes}/>
+                    <MonthlySummaryComponent sumIncomes={sumIncomes} sumConstantTransactions={sumConstantTransactions} sumChangingTransactions={sumChangingTransactions} />
+                </>
+            )}
         </div>
     );
 }
