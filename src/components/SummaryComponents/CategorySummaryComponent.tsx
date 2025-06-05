@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import ITransaction from '@Interfaces/ITransaction';
 import './SummaryComponent.css';
 import {Category} from "../../common/enums/Category";
@@ -51,9 +51,12 @@ const groupByCategoryAndType = (transactions: ITransaction[]): SummaryRow[] => {
 const CategorySummaryComponent: React.FC<CategorySummaryTableProps> = ({ transactions, title, onCategoryClick, sumCalculation}) => {
     const summary = groupByCategoryAndType(transactions);
     const sum = Object.values(summary).reduce((sum, value) => sum + value.total, 0);
-    if (sumCalculation) {
-        sumCalculation(sum);
-    }
+
+    useEffect(() => {
+        if (sumCalculation) {
+            sumCalculation(sum);
+        }
+    }, [sum, sumCalculation]);
 
     return (
         <div className="summary-container">

@@ -25,9 +25,11 @@ const IncomesComponent: React.FC<IncomesComponentProps> = ({sumCalculation}) => 
     }, []) // ← empty array means run once on mount
 
     const sum = incomes.reduce((sum, value) => sum + value.amount, 0);
-    if (sumCalculation) {
-        sumCalculation(sum);
-    }
+    useEffect(() => {
+        if (sumCalculation) {
+            sumCalculation(sum);
+        }
+    }, [sum, sumCalculation]);
 
     return (
         <div className="summary-container" dir="rtl">
