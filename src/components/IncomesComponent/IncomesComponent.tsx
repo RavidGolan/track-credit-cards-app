@@ -40,6 +40,10 @@ const IncomesComponent: React.FC = () => {
                             <span className="income-type">{income.type}</span>
                         </li>
                     ))}
+                    <li className="income-item">
+                        <span className="income-amount">{incomes.reduce((sum, value) => sum + value.amount, 0).toLocaleString()} ₪</span>
+                        <span className="income-type">סה״כ</span>
+                    </li>
                 </ul>
             ) : (
                 <p className="no-income">No incomes found for this period.</p>

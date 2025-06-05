@@ -29,16 +29,15 @@
 
 .income-item:last-child {
     border-bottom: none;
+    color: red;
 }
 
 .income-type {
     font-weight: 500;
-    color: #555;
 }
 
 .income-amount {
     font-weight: bold;
-    color: #222;
 }
 
 .no-income {
