@@ -1,9 +1,18 @@
 import React, {useEffect, useState} from "react";
 import IncomesService from "../../services/supabase/IncomesService";
 import IIncome from "@Interfaces/IIncome";
-import "./SummaryTable.css"
+import "./SummaryComponent.css";
 
-const IncomesComponent: React.FC = () => {
+interface IncomesComponentProps {
+    sumCalculation?: (sum: number) => void;
+}
+
+const formatCurrency = (value: number): string =>
+    value.toLocaleString('he-IL', {
+        maximumFractionDigits: 0,
+    });
+
+const IncomesComponent: React.FC<IncomesComponentProps> = ({sumCalculation}) => {
     const [incomes, setIncomes] = useState<IIncome[]>([]);
 
     useEffect(() => {
@@ -15,59 +24,39 @@ const IncomesComponent: React.FC = () => {
         fetchIncomes()
     }, []) // ← empty array means run once on mount
 
-
+    const sum = incomes.reduce((sum, value) => sum + value.amount, 0);
+    if (sumCalculation) {
+        sumCalculation(sum);
+    }
 
     return (
-        /*<section className="incomes-section">
-            <h2 className="incomes-title">הכנסות חודשיות</h2>
-
-            {incomes.length > 0 ? (
-                <ul className="income-list">
-                    {incomes.map((income, index) => (
-                        <li key={index} className="income-item">
-                            <span className="income-amount">{income.amount.toLocaleString()} ₪</span>
-                            <span className="income-type">{income.type}</span>
-                        </li>
-                    ))}
-                    <li className="income-item">
-                        <span
-                            className="income-amount">{incomes.reduce((sum, value) => sum + value.amount, 0).toLocaleString()} ₪</span>
-                        <span className="income-type">סה״כ</span>
-                    </li>
-                </ul>
-            ) : (
-                <p className="no-income">No incomes found for this period.</p>
-            )}
-        </section>*/
-
-    <div className="summary-container" dir="rtl">
-        <h3 className="summary-title">הכנסות חודשיות</h3>
-        <table className="summary-table">
-            <thead>
-            <tr>
-                <th>קטגוריה</th>
-                <th>סה״כ</th>
-            </tr>
-            </thead>
-            <tbody>
-            {incomes.map((income, index) => (
-                <tr key={index}>
-                    <td>
-                        {income.type}
-                    </td>
-                    <td className="amount">{income.amount.toLocaleString()} ₪</td>
+        <div className="summary-container" dir="rtl">
+            <h3 className="summary-title">הכנסות חודשיות</h3>
+            <table className="summary-table">
+                <thead>
+                <tr>
+                    <th>קטגוריה</th>
+                    <th>סה״כ</th>
                 </tr>
-            ))}
-            <tr className={"summary-sum"}>
-                <td>
-                    סה״כ
-                </td>
-                <td>{incomes.reduce((sum, value) => sum + value.amount, 0).toLocaleString()} ₪</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
+                </thead>
+                <tbody>
+                {incomes.map((income, index) => (
+                    <tr key={index}>
+                        <td>
+                            {income.type}
+                        </td>
+                        <td className="amount">{formatCurrency(income.amount)} ₪</td>
+                    </tr>
+                ))}
+                <tr className={"summary-sum"}>
+                    <td>
+                        סה״כ
+                    </td>
+                    <td>{formatCurrency(sum)} ₪</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     )
         ;
 }

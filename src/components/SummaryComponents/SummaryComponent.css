@@ -1,3 +1,16 @@
+.summaries-container {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 100px;
+}
+
+.summary-equation {
+    font-family: 'Roboto Mono', monospace;
+    line-height: 2;
+    direction: ltr;
+    display: flex;
+}
+
 .summary-container {
     font-family: Inter, system-ui, sans-serif;
     font-size: 14px;

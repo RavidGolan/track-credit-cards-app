@@ -5,7 +5,7 @@ import BankTransactionsService from "../../services/BankTransactionsService";
 import {getVendorCategory} from "../../services/supabase/vendorCategoryService";
 import TransactionFileLoader from "../TransactionsFileLoader/TransactionsFileLoader";
 import {Category} from "../../common/enums/Category";
-import SummaryComponent from "../SummaryComponent/SummaryComponent";
+import SummaryComponent from "../SummaryComponents/SummaryComponent";
 
 const TransactionViewerComponent: React.FC = () => {
     const [transactions, setTransactions] = useState<ITransaction[]>([]); // Use an array to hold data from multiple cards

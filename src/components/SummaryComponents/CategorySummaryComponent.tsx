@@ -1,6 +1,6 @@
 import React from 'react';
 import ITransaction from '@Interfaces/ITransaction';
-import './SummaryTable.css';
+import './SummaryComponent.css';
 import {Category} from "../../common/enums/Category";
 import {TransactionType} from "../../common/enums/TransactionType";
 
@@ -8,6 +8,7 @@ interface CategorySummaryTableProps {
     transactions: ITransaction[];
     title?: string;
     onCategoryClick?: (category: Category | 'ללא קטגוריה' | undefined) => void;
+    sumCalculation?: (sum: number) => void;
 }
 
 interface SummaryRow {
@@ -17,9 +18,6 @@ interface SummaryRow {
 
 const formatCurrency = (value: number): string =>
     value.toLocaleString('he-IL', {
-        style: 'currency',
-        currency: 'ILS',
-        minimumFractionDigits: 0,
         maximumFractionDigits: 0,
     });
 
@@ -50,11 +48,15 @@ const groupByCategoryAndType = (transactions: ITransaction[]): SummaryRow[] => {
     });
 };
 
-const CategorySummaryComponent: React.FC<CategorySummaryTableProps> = ({ transactions, title, onCategoryClick}) => {
+const CategorySummaryComponent: React.FC<CategorySummaryTableProps> = ({ transactions, title, onCategoryClick, sumCalculation}) => {
     const summary = groupByCategoryAndType(transactions);
+    const sum = Object.values(summary).reduce((sum, value) => sum + value.total, 0);
+    if (sumCalculation) {
+        sumCalculation(sum);
+    }
 
     return (
-        <div className="summary-container" dir="rtl">
+        <div className="summary-container">
             {title && (<h3 className="summary-title">{title}</h3>)}
             <table className="summary-table">
                 <thead>
@@ -69,14 +71,14 @@ const CategorySummaryComponent: React.FC<CategorySummaryTableProps> = ({ transac
                         <td onClick={() => onCategoryClick?.(category)}>
                             {category}
                         </td>
-                        <td className="amount">{formatCurrency(total)}</td>
+                        <td className="amount">{formatCurrency(total)}  ₪</td>
                     </tr>
                 ))}
                 <tr className={"summary-sum"}>
                     <td onClick={() => onCategoryClick?.(undefined)}>
                         סה״כ
                     </td>
-                    <td>{formatCurrency(Object.values(summary).reduce((sum, value) => sum + value.total, 0))}</td>
+                    <td>{formatCurrency(sum)}  ₪</td>
                 </tr>
                 </tbody>
             </table>
