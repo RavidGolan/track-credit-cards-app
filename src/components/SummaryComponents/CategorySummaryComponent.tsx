@@ -1,6 +1,6 @@
 import React from 'react';
 import ITransaction from '@Interfaces/ITransaction';
-import './CategorySummaryTable.css';
+import './SummaryTable.css';
 import {Category} from "../../common/enums/Category";
 import {TransactionType} from "../../common/enums/TransactionType";
 
@@ -50,13 +50,13 @@ const groupByCategoryAndType = (transactions: ITransaction[]): SummaryRow[] => {
     });
 };
 
-const CategorySummaryTable: React.FC<CategorySummaryTableProps> = ({ transactions, title, onCategoryClick}) => {
+const CategorySummaryComponent: React.FC<CategorySummaryTableProps> = ({ transactions, title, onCategoryClick}) => {
     const summary = groupByCategoryAndType(transactions);
 
     return (
-        <div className="category-summary-container" dir="rtl">
-            {title && (<h3 className="category-summary-title">{title}</h3>)}
-            <table className="category-summary-table">
+        <div className="summary-container" dir="rtl">
+            {title && (<h3 className="summary-title">{title}</h3>)}
+            <table className="summary-table">
                 <thead>
                 <tr>
                     <th>קטגוריה</th>
@@ -66,14 +66,14 @@ const CategorySummaryTable: React.FC<CategorySummaryTableProps> = ({ transaction
                 <tbody>
                 {summary.map(({ category, total }) => (
                     <tr key={`${category}`}>
-                        <td onClick={() => onCategoryClick?.(category)} className="clickable-category">
+                        <td onClick={() => onCategoryClick?.(category)}>
                             {category}
                         </td>
                         <td className="amount">{formatCurrency(total)}</td>
                     </tr>
                 ))}
-                <tr className={"category-summary-sum"}>
-                    <td onClick={() => onCategoryClick?.(undefined)} className="clickable-category">
+                <tr className={"summary-sum"}>
+                    <td onClick={() => onCategoryClick?.(undefined)}>
                         סה״כ
                     </td>
                     <td>{formatCurrency(Object.values(summary).reduce((sum, value) => sum + value.total, 0))}</td>
@@ -84,4 +84,4 @@ const CategorySummaryTable: React.FC<CategorySummaryTableProps> = ({ transaction
     );
 };
 
-export default CategorySummaryTable;
+export default CategorySummaryComponent;

@@ -1,10 +1,10 @@
 import React from "react";
 import {TransactionType} from "../../common/enums/TransactionType";
-import CategorySummaryTable from "../CategorySummaryTable/CategorySummaryTable";
+import CategorySummaryComponent from "../SummaryComponents/CategorySummaryComponent";
 import ITransaction from "@Interfaces/ITransaction";
 import {Category} from "../../common/enums/Category";
 import "./SummaryComponent.css"
-import IncomesComponent from "../IncomesComponent/IncomesComponent";
+import IncomesComponent from "../SummaryComponents/IncomesComponent";
 
 interface SummaryComponentProps {
     transactions: ITransaction[],
@@ -13,12 +13,12 @@ interface SummaryComponentProps {
 
 const SummaryComponent: React.FC<SummaryComponentProps> = ({transactions, onCategoryClick}) => {
     return (<div className={"category-summaries-container"}>
-        <CategorySummaryTable title={"סיכום הוצאות קבועות"}
-                              transactions={transactions.filter(transaction => transaction.transactionType === TransactionType.CONSTANT)}
-                              onCategoryClick={onCategoryClick}/>
-        <CategorySummaryTable title={"סיכום הוצאות משתנות"}
-                              transactions={transactions.filter(transaction => transaction.transactionType === TransactionType.CHANGING)}
-                              onCategoryClick={onCategoryClick}/>
+        <CategorySummaryComponent title={"סיכום הוצאות קבועות"}
+                                  transactions={transactions.filter(transaction => transaction.transactionType === TransactionType.CONSTANT)}
+                                  onCategoryClick={onCategoryClick}/>
+        <CategorySummaryComponent title={"סיכום הוצאות משתנות"}
+                                  transactions={transactions.filter(transaction => transaction.transactionType === TransactionType.CHANGING)}
+                                  onCategoryClick={onCategoryClick}/>
         <IncomesComponent></IncomesComponent>
     </div>);
 }

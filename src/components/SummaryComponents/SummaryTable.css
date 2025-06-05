@@ -1,52 +1,50 @@
-.category-summary-container {
+.summary-container {
     font-family: Inter, system-ui, sans-serif;
     font-size: 14px;
     color: #212529;
+    text-align: center;
 }
 
-.category-summary-title {
+.summary-title {
     font-size: 16px;
     font-weight: 600;
     margin-bottom: 0.5rem;
 }
 
-.category-summary-table {
+.summary-table {
     border-collapse: collapse;
     border: 1px solid #d6d6d6;
     border-radius: 4px;
     overflow: hidden;
 }
 
-.category-summary-table thead {
+.summary-table thead {
     background-color: #f5f5f5;
     border-bottom: 1px solid #d6d6d6;
 }
 
-.category-summary-table th,
-.category-summary-table td {
+.summary-table th,
+.summary-table td {
     padding: 10px 12px;
     line-height: 1.6;
     border-bottom: 1px solid #eaeaea;
-    text-align: center;
 }
 
-.category-summary-table th {
-    text-align: left;
+.summary-table th {
     font-weight: 600;
     color: #444;
 }
 
-.category-summary-table td.amount {
+.summary-table td.amount {
     font-family: 'Roboto Mono', monospace;
     white-space: nowrap;
     color: #212121;
-    text-align: center;
 }
 
-.category-summary-table tbody tr:hover {
+.summary-table tbody tr:hover {
     background-color: #f3f6f9;
 }
 
-.category-summary-sum {
+.summary-sum {
     color: red;
 }
