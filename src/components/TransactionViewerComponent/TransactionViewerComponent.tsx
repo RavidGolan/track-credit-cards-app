@@ -2,12 +2,10 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import ITransaction from "@Interfaces/ITransaction";
 import TransactionsAgGridComponent from "../TransactionsAgGridComponent/TransactionsAgGridComponent";
 import BankTransactionsService from "../../services/BankTransactionsService";
-import CategorySummaryTable from "../CategorySummaryTable/CategorySummaryTable";
 import {getVendorCategory} from "../../services/supabase/vendorCategoryService";
 import TransactionFileLoader from "../TransactionsFileLoader/TransactionsFileLoader";
-import {TransactionType} from "../../common/enums/TransactionType";
-import './TransactionViewerComponent.css';
 import {Category} from "../../common/enums/Category";
+import SummaryComponent from "../SummaryComponent/SummaryComponent";
 
 const TransactionViewerComponent: React.FC = () => {
     const [transactions, setTransactions] = useState<ITransaction[]>([]); // Use an array to hold data from multiple cards
@@ -46,14 +44,7 @@ const TransactionViewerComponent: React.FC = () => {
     return (
         <div>
             <TransactionFileLoader onData={handleNewData}/>
-            <div className={"category-summaries-container"}>
-                <CategorySummaryTable title={"סיכום הוצאות קבועות"}
-                                      transactions={transactions.filter(transaction => transaction.transactionType === TransactionType.CONSTANT)}
-                                      onCategoryClick={setFilteredCategory}/>
-                <CategorySummaryTable title={"סיכום הוצאות משתנות"}
-                                      transactions={transactions.filter(transaction => transaction.transactionType === TransactionType.CHANGING)}
-                                      onCategoryClick={setFilteredCategory}/>
-            </div>
+            <SummaryComponent transactions={transactions} onCategoryClick={setFilteredCategory}></SummaryComponent>
             {transactions.length > 0 &&
                 <TransactionsAgGridComponent
                     transactions={transactions}
