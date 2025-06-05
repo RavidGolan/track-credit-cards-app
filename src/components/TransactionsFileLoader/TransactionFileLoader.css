@@ -33,13 +33,3 @@
     margin-top: 0.5rem;
     color: #333;
 }
-
-.mode-selector {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.mode-selector label {
-    font-size: 14px;
-}

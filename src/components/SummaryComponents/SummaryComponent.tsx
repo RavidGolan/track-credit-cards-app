@@ -11,9 +11,11 @@ import {useSearchParams} from "react-router-dom";
 interface SummaryComponentProps {
     transactions: ITransaction[],
     onCategoryClick?: (category: Category | 'ללא קטגוריה' | undefined) => void;
+    year: string;
+    month: string;
 }
 
-const SummaryComponent: React.FC<SummaryComponentProps> = ({transactions, onCategoryClick}) => {
+const SummaryComponent: React.FC<SummaryComponentProps> = ({transactions, onCategoryClick, year, month}) => {
     const [sumConstantTransactions, setSumConstantTransactions] = useState<number>(0);
     const [sumChangingTransactions, setSumChangingTransactions] = useState<number>(0 );
     const [sumIncomes, setSumIncomes] = useState<number>(0);
@@ -34,7 +36,7 @@ const SummaryComponent: React.FC<SummaryComponentProps> = ({transactions, onCate
                                       sumCalculation={setSumChangingTransactions}/>
             {showIncomes && (
                 <>
-                    <IncomesComponent sumCalculation={setSumIncomes}/>
+                    <IncomesComponent sumCalculation={setSumIncomes} year={year} month={month}/>
                     <MonthlySummaryComponent sumIncomes={sumIncomes} sumConstantTransactions={sumConstantTransactions} sumChangingTransactions={sumChangingTransactions} />
                 </>
             )}

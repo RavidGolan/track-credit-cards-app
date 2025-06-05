@@ -1,25 +1,34 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import './TransactionFileLoader.css';
-import ITransaction from "@Interfaces/ITransaction";
-import {CreditCards} from "../../common/enums/CreditCards";
-import {StorageService} from "../../services/supabase/storageService";
-import ICreditCardIssuersService from "@Interfaces/ICreditCardIssuersService";
-import {CreditCardsServices} from "../../services/CreditCardsServices";
-import {CreditCardToIssuerMap, CreditCardToNumberMap} from "../../common/utils/creditCardMappings";
+import ITransaction from '@Interfaces/ITransaction';
+import { CreditCards } from '../../common/enums/CreditCards';
+import { StorageService } from '../../services/supabase/storageService';
+import ICreditCardIssuersService from '@Interfaces/ICreditCardIssuersService';
+import { CreditCardsServices } from '../../services/CreditCardsServices';
+import {
+    CreditCardToIssuerMap,
+    CreditCardToNumberMap,
+} from '../../common/utils/creditCardMappings';
 
-interface Props {
-    onData: (data: ITransaction[]) => void;
+interface TransactionFileLoaderProps {
+    year: string;
+    month: string;
+    setYear: (year: string) => void;
+    setMonth: (month: string) => void;
+    onLoad: (transactions: ITransaction[]) => void;
 }
 
-const TransactionFileLoader: React.FC<Props> = ({ onData }) => {
-    const [mode, setMode] = useState<'byMonth' | 'full'>('byMonth');
-
-    const [creditCard, setCreditCard] = useState<CreditCards | ''>('');
-    const [year, setYear] = useState<string | ''>('');
-    const [month, setMonth] = useState<string | ''>('');
+const TransactionFileLoader: React.FC<TransactionFileLoaderProps> = ({
+                                                                         year,
+                                                                         month,
+                                                                         setYear,
+                                                                         setMonth,
+                                                                         onLoad,
+                                                                     }) => {
     const [status, setStatus] = useState<string>('');
-    const [availableYearsAndMonths, setAvailableYearsAndMonths] = useState<Record<string, string[]>>({})
+    const [availableYearsAndMonths, setAvailableYearsAndMonths] = useState<Record<string, string[]>>({});
 
+    // Load available years/months on mount
     useEffect(() => {
         const loadYearsAndMonths = async () => {
             const folderMap = await StorageService.getAvailableYearsAndMonths();
@@ -30,17 +39,22 @@ const TransactionFileLoader: React.FC<Props> = ({ onData }) => {
             const sortedMonths = folderMap[latestYear]?.sort((a, b) => Number(a) - Number(b)) || [];
             const latestMonth = sortedMonths.at(-1) || '';
 
-            // Set state, but don't load yet
             setYear(latestYear);
             setMonth(latestMonth);
         };
+
         loadYearsAndMonths();
-    }, []);
+    }, [setYear, setMonth]);
 
+    // Fetch transactions when year or month changes
     const handleLoad = useCallback(async () => {
+        if (!year || !month) {
+            setStatus('יש לבחור שנה וחודש');
+            return;
+        }
 
+        const folder = `${year}/${month}`;
         const loadTransactions = async (currentCreditCard: CreditCards): Promise<ITransaction[]> => {
-            const folder = `${year}/${month.toString()}`;
             const filename = `${CreditCardToNumberMap[currentCreditCard]}_${month}_${year}.xlsx`;
             const path = `${folder}/${filename}`;
 
@@ -49,109 +63,51 @@ const TransactionFileLoader: React.FC<Props> = ({ onData }) => {
                 const data = await StorageService.parseExcelFileFromStorage(path);
                 setStatus('✅ הקובץ נטען בהצלחה');
 
-
                 const service: ICreditCardIssuersService | undefined = CreditCardsServices[CreditCardToIssuerMap[currentCreditCard]];
-                if (!service) {
-                    console.warn(`No service found for vendor: ${currentCreditCard}`);
-                    return [];
-                }
+                if (!service) return [];
 
-                let transactions = service.transformRawData(data);
-                const transactionsWithSource = transactions.map((transaction) => ({
-                    ...transaction,
-                    source: currentCreditCard
-                }));
-                console.log(transactionsWithSource);
-                return(transactionsWithSource);
-            } catch (err: any) {
+                const transactions = service.transformRawData(data);
+                return transactions.map((t) => ({ ...t, source: currentCreditCard }));
+            } catch (err) {
                 console.error(err);
                 setStatus('❌ הקובץ לא נמצא או שגיאה בקריאה');
-                return([]);
+                return [];
             }
-        }
+        };
 
-        if (mode === 'byMonth') {
-            if (!year || !month) {
-                setStatus('יש לבחור שנה וחודש');
-                return;
-            }
+        const allTransactions = await Promise.all(
+            Object.values(CreditCards).map((card) => loadTransactions(card as CreditCards))
+        );
 
-            const all = await Promise.all(
-                Object.values(CreditCards).map(async card =>
-                    loadTransactions(card as CreditCards)
-                )
-            );
-            onData(all.flat());
+        onLoad(allTransactions.flat());
+    }, [year, month, onLoad]);
 
-        } else {
-            if (!creditCard || !year || !month) {
-                setStatus('יש לבחור כרטיס, שנה וחודש');
-                return;
-            }
-
-            onData(await loadTransactions(creditCard));
-        }
-    }, [mode, year, month, creditCard, onData]);
-
+    // Automatically trigger load when both year & month are set
     useEffect(() => {
-        // Only load if both are set (and not during initial undefined state)
-        if (mode === 'byMonth' && year && month) {
-            handleLoad();
-        } else if (mode === 'full' && year && month && creditCard) {
+        if (year && month) {
             handleLoad();
         }
-    }, [year, month, creditCard, mode, handleLoad]);
+    }, [year, month, handleLoad]);
 
-    const years = useMemo(() => Object.keys(availableYearsAndMonths).sort((a, b) => Number(a) - Number(b)), [availableYearsAndMonths]);
+    const years = useMemo(
+        () => Object.keys(availableYearsAndMonths).sort((a, b) => Number(a) - Number(b)),
+        [availableYearsAndMonths]
+    );
     const months = (availableYearsAndMonths[year] || []).sort((a, b) => Number(a) - Number(b));
-
 
     return (
         <div className="transaction-file-loader-container" dir="rtl">
             <h2 className="transaction-file-loader-title">טעינת קובץ עסקאות מהאחסון</h2>
 
-            <div className="mode-selector">
-                <label>
-                    <input
-                        type="radio"
-                        value="byMonth"
-                        checked={mode === 'byMonth'}
-                        onChange={() => setMode('byMonth')}
-                    />
-                    לפי שנה + חודש
-                </label>
-
-                <label>
-                    <input
-                        type="radio"
-                        value="full"
-                        checked={mode === 'full'}
-                        onChange={() => setMode('full')}
-                    />
-                    לפי שנה + חודש + כרטיס
-                </label>
-            </div>
-
-
             <div className="transaction-file-loader-selects">
-                {mode === 'full' && (
-                    <label>
-                        כרטיס אשראי:
-                        <select value={creditCard} onChange={(e) => setCreditCard(e.target.value as CreditCards)}>
-                            <option value="">בחר</option>
-                            {Object.values(CreditCards).map((card) => (
-                                <option key={card} value={card}>{card}</option>
-                            ))}
-                        </select>
-                    </label>
-                )}
-
                 <label>
                     שנה:
                     <select value={year} onChange={(e) => setYear(e.target.value)}>
                         <option value="">בחר</option>
                         {years.map((y) => (
-                            <option key={y} value={y}>{y}</option>
+                            <option key={y} value={y}>
+                                {y}
+                            </option>
                         ))}
                     </select>
                 </label>
@@ -160,8 +116,10 @@ const TransactionFileLoader: React.FC<Props> = ({ onData }) => {
                     חודש:
                     <select value={month} onChange={(e) => setMonth(e.target.value)}>
                         <option value="">בחר</option>
-                        {months.map(month => (
-                            <option key={month} value={month}>{month}</option>
+                        {months.map((m) => (
+                            <option key={m} value={m}>
+                                {m}
+                            </option>
                         ))}
                     </select>
                 </label>

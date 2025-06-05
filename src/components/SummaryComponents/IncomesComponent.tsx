@@ -5,6 +5,8 @@ import "./SummaryComponent.css";
 
 interface IncomesComponentProps {
     sumCalculation?: (sum: number) => void;
+    year: string;
+    month: string
 }
 
 const formatCurrency = (value: number): string =>
@@ -12,17 +14,17 @@ const formatCurrency = (value: number): string =>
         maximumFractionDigits: 0,
     });
 
-const IncomesComponent: React.FC<IncomesComponentProps> = ({sumCalculation}) => {
+const IncomesComponent: React.FC<IncomesComponentProps> = ({sumCalculation, year, month}) => {
     const [incomes, setIncomes] = useState<IIncome[]>([]);
 
     useEffect(() => {
-        const fetchIncomes = async () => {
-            const incomes: IIncome[] = await IncomesService.getIncomesByYearAndMonth(2025, 5);
+        const fetchIncomes = async (year: string, month: string) => {
+            const incomes: IIncome[] = await IncomesService.getIncomesByYearAndMonth(year, month);
             setIncomes(incomes);
         }
 
-        fetchIncomes()
-    }, []) // ← empty array means run once on mount
+        fetchIncomes(year, month);
+    }, [year, month]) // ← empty array means run once on mount
 
     const sum = incomes.reduce((sum, value) => sum + value.amount, 0);
     useEffect(() => {

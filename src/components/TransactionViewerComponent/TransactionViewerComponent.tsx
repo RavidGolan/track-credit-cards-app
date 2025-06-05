@@ -1,18 +1,21 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import ITransaction from "@Interfaces/ITransaction";
-import TransactionsAgGridComponent from "../TransactionsAgGridComponent/TransactionsAgGridComponent";
-import BankTransactionsService from "../../services/BankTransactionsService";
-import {getVendorCategory} from "../../services/supabase/vendorCategoryService";
-import TransactionFileLoader from "../TransactionsFileLoader/TransactionsFileLoader";
-import {Category} from "../../common/enums/Category";
-import SummaryComponent from "../SummaryComponents/SummaryComponent";
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import ITransaction from '@Interfaces/ITransaction';
+import TransactionsAgGridComponent from '../TransactionsAgGridComponent/TransactionsAgGridComponent';
+import BankTransactionsService from '../../services/BankTransactionsService';
+import { getVendorCategory } from '../../services/supabase/vendorCategoryService';
+import TransactionFileLoader from '../TransactionsFileLoader/TransactionsFileLoader';
+import { Category } from '../../common/enums/Category';
+import SummaryComponent from '../SummaryComponents/SummaryComponent';
 
 const TransactionViewerComponent: React.FC = () => {
-    const [transactions, setTransactions] = useState<ITransaction[]>([]); // Use an array to hold data from multiple cards
+    const [transactions, setTransactions] = useState<ITransaction[]>([]);
     const [filteredCategory, setFilteredCategory] = useState<Category | 'ללא קטגוריה'>();
+    const [year, setYear] = useState<string>('');
+    const [month, setMonth] = useState<string>('');
 
     const bankTransactionsRef = useRef<ITransaction[]>([]);
-    // ✅ Load initial transactions on mount
+
+    // Load bank transactions on mount
     useEffect(() => {
         const init = async () => {
             const rawTransactions = BankTransactionsService.getTransactions();
@@ -20,7 +23,6 @@ const TransactionViewerComponent: React.FC = () => {
             setTransactions(enriched);
             bankTransactionsRef.current = enriched;
         };
-
         init();
     }, []);
 
@@ -35,20 +37,37 @@ const TransactionViewerComponent: React.FC = () => {
         );
     };
 
-    // Update the onData handler to append new transactions
-    const handleNewData = useCallback(async (newTransactions: ITransaction[]) => {
-        const enriched = await enrichTransactionsWithCategories(newTransactions);
-        setTransactions([...bankTransactionsRef.current, ...enriched]);
-    },[]);
+    const handleNewData = useCallback(
+        async (newTransactions: ITransaction[]) => {
+            const enriched = await enrichTransactionsWithCategories(newTransactions);
+            setTransactions([...bankTransactionsRef.current, ...enriched]);
+        },
+        []
+    );
 
     return (
         <div>
-            <TransactionFileLoader onData={handleNewData}/>
-            <SummaryComponent transactions={transactions} onCategoryClick={setFilteredCategory}></SummaryComponent>
-            {transactions.length > 0 &&
+            <TransactionFileLoader
+                onLoad={handleNewData}
+                year={year}
+                month={month}
+                setYear={setYear}
+                setMonth={setMonth}
+            />
+
+            <SummaryComponent
+                transactions={transactions}
+                onCategoryClick={setFilteredCategory}
+                year={year}
+                month={month}
+            />
+
+            {transactions.length > 0 && (
                 <TransactionsAgGridComponent
                     transactions={transactions}
-                    filteredCategory={filteredCategory}/>}
+                    filteredCategory={filteredCategory}
+                />
+            )}
         </div>
     );
 };

@@ -21,25 +21,27 @@ export default class IncomesService {
         }
     }
 
-    static async getIncomesByYearAndMonth(year: number, month: number): Promise<IIncome[]> {
-        // return [];
+    static async getIncomesByYearAndMonth(year: string, month: string): Promise<IIncome[]> {
+        if (year && month) {
+            const {data, error} = await supabase
+                .from('incomes')
+                .select('*')
+                .eq('year', year)
+                .eq('month', month)
 
-        const { data, error } = await supabase
-            .from('incomes')
-            .select('*')
-            .eq('year', year)
-            .eq('month', month)
-
-        if (error) {
-            return [];
+            if (error) {
+                return [];
+            } else {
+                return data.map(row => ({
+                    year: row.year,
+                    month: row.month,
+                    amount: row.amount,
+                    // type: row.type as IncomeType
+                    type: IncomeType[row.type as keyof typeof IncomeType]
+                }));
+            }
         } else {
-            return data.map(row => ({
-                year: row.year,
-                month: row.month,
-                amount: row.amount,
-                // type: row.type as IncomeType
-                type: IncomeType[row.type as keyof typeof IncomeType]
-            }));
+            return [];
         }
     }
 }
