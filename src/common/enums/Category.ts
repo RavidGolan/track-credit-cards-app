@@ -23,5 +23,5 @@ export enum Category {
     PARKING = 'חניה',
     CARD_FEE = 'דמי כרטיס',
     ITURAN = 'איתוראן',
-    KINDERGARTEN_COMMITTEE = 'ועד גן חרוב'
+    REFAUND = 'החזר'
 }

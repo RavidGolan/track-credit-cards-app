@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { AgGridReact } from 'ag-grid-react';
+import React, {useEffect, useState} from 'react';
+import {AgGridReact} from 'ag-grid-react';
 
 // AG Grid Community
 import {
@@ -21,22 +21,17 @@ import {
 } from 'ag-grid-community';
 
 // AG Grid Enterprise
-import {
-  PivotModule,
-  RowGroupingModule,
-  RowGroupingPanelModule,
-  TreeDataModule,
-    // SetFilterModule
-} from 'ag-grid-enterprise';
+import {PivotModule, RowGroupingModule, RowGroupingPanelModule, TreeDataModule,} from 'ag-grid-enterprise';
 
 // AG Grid styles
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 
 // App-specific
 import ITransaction from '@Interfaces/ITransaction';
-import { Category } from '../../common/enums/Category';
-import { TransactionType } from '../../common/enums/TransactionType';
-import { getVendorCategory, setVendorCategory } from '../../services/supabase/vendorCategoryService';
+import {Category} from '../../common/enums/Category';
+import {TransactionType} from '../../common/enums/TransactionType';
+import {setVendorCategory} from '../../services/supabase/vendorCategoryService';
+import {setCategoryByTransactionId} from '../../services/supabase/transactionCategoryOverridesService';
 import {defaultTransactionsColumnDefs, transactionsColumnDefs} from "./TransactionsColumnDefs";
 
 // Register required AG Grid modules (both Community and Enterprise)
@@ -66,27 +61,7 @@ interface TransactionsAgGridComponentProps {
 const TransactionsAgGridComponent: React.FC<
   TransactionsAgGridComponentProps
 > = ({ transactions, filteredCategory }) => {
-  const [rowData, setRowData] = useState<ITransaction[]>([]);
   const [gridApi, setGridApi] = useState<GridApi<ITransaction>>();
-
-  // 1. Load vendor-category mapping and patch transactions
-  useEffect(() => {
-    const enrich = async () => {
-      const enriched = await Promise.all(
-          transactions.map(async (tx) => ({
-            ...tx,
-            category: String(
-                tx.category || (await getVendorCategory(tx.vendor)) || '',
-            ),
-          })),
-      );
-      setRowData(enriched);
-      console.log('enriched');
-      console.log(enriched);
-    };
-
-    enrich();
-  }, [transactions]);
 
   // 4. Optional row coloring
   const getRowStyle = (
@@ -107,11 +82,16 @@ const TransactionsAgGridComponent: React.FC<
   // 5. Save new category mapping when user changes it
   const handleCellValueChanged = async (params: any) => {
     if (params.colDef.field === 'category') {
+      const transaction: ITransaction = params.data;
       const {vendor} = params.data;
       const category = params.newValue as Category;
 
       if (vendor && Object.values(Category).includes(category)) {
-        await setVendorCategory(vendor, category);
+        if (category === Category.REFAUND) {
+          await setCategoryByTransactionId(transaction.date, transaction.vendor, transaction.amount, Category.REFAUND);
+        } else {
+          await setVendorCategory(vendor, category);
+        }
       }
     }
   };
@@ -147,7 +127,7 @@ const TransactionsAgGridComponent: React.FC<
   return (
       <div className="ag-theme-quartz">
         <AgGridReact<ITransaction>
-            rowData={rowData}
+            rowData={transactions}
             columnDefs={transactionsColumnDefs}
             getRowStyle={getRowStyle}
             animateRows={true}

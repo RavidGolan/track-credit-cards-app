@@ -1,9 +1,11 @@
 import { supabase } from './supabaseClient';
 import { Category } from '../../common/enums/Category';
 
-let _vendorCategoryMap: Record<string, Category> = {};
+// region category by vendor
+
 let _isLoaded = false;
 let _loadPromise: Promise<void> | null = null;
+let _categoryByVendor: Record<string, Category> = {};
 
 async function loadIfNeeded(): Promise<void> {
     if (_isLoaded) return;
@@ -21,7 +23,7 @@ async function loadIfNeeded(): Promise<void> {
             return;
         }
 
-        _vendorCategoryMap = data.reduce((map: Record<string, Category>, row) => {
+        _categoryByVendor = data.reduce((map: Record<string, Category>, row) => {
             if (row.vendor && Object.values(Category).includes(row.category)) {
                 map[row.vendor] = row.category as Category;
             }
@@ -35,14 +37,14 @@ async function loadIfNeeded(): Promise<void> {
     return _loadPromise;
 }
 
-export async function getVendorCategory(vendor: string): Promise<Category | undefined> {
+export async function getCategoryByVendor(vendor: string): Promise<Category | undefined> {
     await loadIfNeeded();
-    return _vendorCategoryMap[vendor];
+    return _categoryByVendor[vendor];
 }
 
-export async function getVendorCategoryMap(): Promise<Record<string, Category>> {
+export async function getCategoryByVendorMap(): Promise<Record<string, Category>> {
     await loadIfNeeded();
-    return _vendorCategoryMap;
+    return _categoryByVendor;
 }
 
 export async function setVendorCategory(vendor: string, category: Category): Promise<void> {
@@ -55,5 +57,7 @@ export async function setVendorCategory(vendor: string, category: Category): Pro
         throw error;
     }
 
-    _vendorCategoryMap[vendor] = category;
+    _categoryByVendor[vendor] = category;
 }
+
+// endregion category by vendor
