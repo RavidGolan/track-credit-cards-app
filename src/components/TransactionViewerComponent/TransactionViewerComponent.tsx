@@ -7,6 +7,7 @@ import {getCategoryByTransactionId} from '../../services/supabase/transactionCat
 import TransactionFileLoader from '../TransactionsFileLoader/TransactionsFileLoader';
 import { Category } from '../../common/enums/Category';
 import SummaryComponent from '../SummaryComponents/SummaryComponent';
+import {getDetailsByTransactionId} from "../../services/supabase/transactionDetailsService";
 
 const TransactionViewerComponent: React.FC = () => {
     const [transactions, setTransactions] = useState<ITransaction[]>([]);
@@ -35,6 +36,7 @@ const TransactionViewerComponent: React.FC = () => {
                 ...tx,
                 category: tx.category ||
                     (await getCategoryByTransactionId(tx.date, tx.vendor, tx.amount)) || (await getCategoryByVendor(tx.vendor)) || '',
+                details: (await getDetailsByTransactionId(tx.date, tx.vendor, tx.amount) || tx.details || '')
             }))
         );
     };

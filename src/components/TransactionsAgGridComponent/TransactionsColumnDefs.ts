@@ -53,6 +53,12 @@ export const transactionsColumnDefs: ColDef<ITransaction>[] = [
         aggFunc: 'sum',
     },
     {
+        field: 'details',
+        headerName: 'Details',
+        editable: true,
+        aggFunc: customTextAgg,
+    },
+    {
         field: 'source',
         headerName: 'Credit Card',
         aggFunc: customTextAgg,
@@ -69,10 +75,5 @@ export const transactionsColumnDefs: ColDef<ITransaction>[] = [
     {
         field: 'type',
         headerName: 'Type',
-    },
-    {
-        field: 'details',
-        headerName: 'Details',
-        aggFunc: customTextAgg,
-    },
+    }
 ];

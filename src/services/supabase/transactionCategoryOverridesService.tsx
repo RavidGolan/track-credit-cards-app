@@ -16,7 +16,7 @@ async function loadCategoryByTransactionIdIfNeeded(): Promise<void> {
             .select('transaction_id, category');
 
         if (error) {
-            console.error('Failed to load vendor-category map:', error);
+            console.error('Failed to load transaction_category_overrides:', error);
             _loadCategoryByTransactionIdPromise = null; // allow retry
             return;
         }

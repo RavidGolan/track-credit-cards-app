@@ -16,6 +16,7 @@ import {
   RowStyle,
   RowStyleModule,
   SelectEditorModule,
+  TextEditorModule,
   TextFilterModule,
   ValidationModule,
 } from 'ag-grid-community';
@@ -33,6 +34,7 @@ import {TransactionType} from '../../common/enums/TransactionType';
 import {setVendorCategory} from '../../services/supabase/vendorCategoryService';
 import {setCategoryByTransactionId} from '../../services/supabase/transactionCategoryOverridesService';
 import {defaultTransactionsColumnDefs, transactionsColumnDefs} from "./TransactionsColumnDefs";
+import {setDetailsByTransactionId} from "../../services/supabase/transactionDetailsService";
 
 // Register required AG Grid modules (both Community and Enterprise)
 ModuleRegistry.registerModules([
@@ -41,6 +43,7 @@ ModuleRegistry.registerModules([
   RowAutoHeightModule,
   PaginationModule,
   NumberFilterModule,
+  TextEditorModule,
   TextFilterModule,
   SelectEditorModule,
   // SetFilterModule,
@@ -86,13 +89,16 @@ const TransactionsAgGridComponent: React.FC<
       const {vendor} = params.data;
       const category = params.newValue as Category;
 
-      if (vendor && Object.values(Category).includes(category)) {
+      if (Object.values(Category).includes(category)) {
         if (category === Category.REFAUND) {
           await setCategoryByTransactionId(transaction.date, transaction.vendor, transaction.amount, Category.REFAUND);
         } else {
           await setVendorCategory(vendor, category);
         }
       }
+    } else if  (params.colDef.field === 'details') {
+      const transaction: ITransaction = params.data;
+      await setDetailsByTransactionId(transaction.date, transaction.vendor, transaction.amount, params.newValue);
     }
   };
 
