@@ -69,7 +69,9 @@ const CategorySummaryComponent: React.FC<CategorySummaryTableProps> = ({ transac
                 </tr>
                 </thead>
                 <tbody>
-                {summary.map(({ category, total }) => (
+                {summary
+                    .filter(({ total }) => (total > 0))
+                    .map(({ category, total }) => (
                     <tr key={`${category}`}>
                         <td onClick={() => onCategoryClick?.(category)}>
                             {category}

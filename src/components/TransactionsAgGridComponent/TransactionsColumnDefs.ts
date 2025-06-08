@@ -17,7 +17,9 @@ const customTextAgg = (params: any) => {
 };
 
 // Category enum options
-const CATEGORY_OPTIONS = Object.values(Category);
+const CATEGORY_OPTIONS = Object.values(Category).sort((a, b) =>
+    a.localeCompare(b, 'he')
+);
 
 // Column definitions
 export const transactionsColumnDefs: ColDef<ITransaction>[] = [
