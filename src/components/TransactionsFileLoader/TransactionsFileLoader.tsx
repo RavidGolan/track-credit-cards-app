@@ -34,17 +34,19 @@ const TransactionFileLoader: React.FC<TransactionFileLoaderProps> = ({
             const folderMap = await StorageService.getAvailableYearsAndMonths();
             setAvailableYearsAndMonths(folderMap);
 
-            const sortedYears = Object.keys(folderMap).sort((a, b) => Number(a) - Number(b));
-            const latestYear = sortedYears.at(-1) || '';
-            const sortedMonths = folderMap[latestYear]?.sort((a, b) => Number(a) - Number(b)) || [];
-            const latestMonth = sortedMonths.at(-1) || '';
+            if (!(year && month)) {
+                const sortedYears = Object.keys(folderMap).sort((a, b) => Number(a) - Number(b));
+                const latestYear = sortedYears.at(-1) || '';
+                const sortedMonths = folderMap[latestYear]?.sort((a, b) => Number(a) - Number(b)) || [];
+                const latestMonth = sortedMonths.at(-1) || '';
 
-            setYear(latestYear);
-            setMonth(latestMonth);
+                if (!year) setYear(latestYear);
+                if (!month) setMonth(latestMonth);
+            }
         };
 
         loadYearsAndMonths();
-    }, [setYear, setMonth]);
+    }, [setYear, setMonth, year, month]);
 
     // Fetch transactions when year or month changes
     const handleLoad = useCallback(async () => {
@@ -95,6 +97,10 @@ const TransactionFileLoader: React.FC<TransactionFileLoaderProps> = ({
     );
     const months = (availableYearsAndMonths[year] || []).sort((a, b) => Number(a) - Number(b));
 
+    if (!availableYearsAndMonths || Object.keys(availableYearsAndMonths).length === 0) {
+        return <div>טוען...</div>; // Or a spinner
+    }
+
     return (
         <div className="transaction-file-loader-container" dir="rtl">
             <h2 className="transaction-file-loader-title">טעינת קובץ עסקאות מהאחסון</h2>
@@ -102,7 +108,7 @@ const TransactionFileLoader: React.FC<TransactionFileLoaderProps> = ({
             <div className="transaction-file-loader-selects">
                 <label>
                     שנה:
-                    <select value={year} onChange={(e) => setYear(e.target.value)}>
+                    <select value={years.includes(year) ? year : ''} onChange={(e) => setYear(e.target.value)}>
                         <option value="">בחר</option>
                         {years.map((y) => (
                             <option key={y} value={y}>
@@ -114,7 +120,7 @@ const TransactionFileLoader: React.FC<TransactionFileLoaderProps> = ({
 
                 <label>
                     חודש:
-                    <select value={month} onChange={(e) => setMonth(e.target.value)}>
+                    <select value={months.includes(month) ? month : ''} onChange={(e) => setMonth(e.target.value)}>
                         <option value="">בחר</option>
                         {months.map((m) => (
                             <option key={m} value={m}>

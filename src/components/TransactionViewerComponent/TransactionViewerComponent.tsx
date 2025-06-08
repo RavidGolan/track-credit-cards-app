@@ -8,12 +8,40 @@ import TransactionFileLoader from '../TransactionsFileLoader/TransactionsFileLoa
 import { Category } from '../../common/enums/Category';
 import SummaryComponent from '../SummaryComponents/SummaryComponent';
 import {getDetailsByTransactionId} from "../../services/supabase/transactionDetailsService";
+import {useNavigate, useParams, useSearchParams} from 'react-router-dom';
 
 const TransactionViewerComponent: React.FC = () => {
     const [transactions, setTransactions] = useState<ITransaction[]>([]);
     const [filteredCategory, setFilteredCategory] = useState<Category | 'ללא קטגוריה'>();
-    const [year, setYear] = useState<string>('');
-    const [month, setMonth] = useState<string>('');
+
+    // region handle year & month
+
+    const { year: paramYear, month: paramMonth } = useParams();
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+
+    const [year, setYear] = useState(paramYear || '');
+    const [month, setMonth] = useState(paramMonth || '');
+    const showIncomes = searchParams.has('showIncomes');
+
+    // Sync dropdown change to URL
+    const updateURL = (newYear: string, newMonth: string) => {
+        const query = showIncomes ? '?showIncomes' : '';
+        navigate(`/transactions/${newYear}/${newMonth}${query}`);
+    };
+
+    const handleSetYear = (newYear: string) => {
+        setYear(newYear);
+        if (month) updateURL(newYear, month);
+    };
+
+    const handleSetMonth = (newMonth: string) => {
+        setMonth(newMonth);
+        if (year) updateURL(year, newMonth);
+    };
+
+
+    // endregion handle year & month
 
     const bankTransactionsRef = useRef<ITransaction[]>([]);
 
@@ -21,14 +49,14 @@ const TransactionViewerComponent: React.FC = () => {
     useEffect(() => {
         const init = async () => {
             const rawTransactions = BankTransactionsService.getTransactions();
-            const enriched = await enrichTransactionsWithCategories(rawTransactions);
+            const enriched = await _enrichTransactions(rawTransactions);
             setTransactions(enriched);
             bankTransactionsRef.current = enriched;
         };
         init();
     }, []);
 
-    const enrichTransactionsWithCategories = async (
+    const _enrichTransactions = async (
         txs: ITransaction[]
     ): Promise<ITransaction[]> => {
         return Promise.all(
@@ -43,7 +71,7 @@ const TransactionViewerComponent: React.FC = () => {
 
     const handleNewData = useCallback(
         async (newTransactions: ITransaction[]) => {
-            const enriched = await enrichTransactionsWithCategories(newTransactions);
+            const enriched = await _enrichTransactions(newTransactions);
             setTransactions([...bankTransactionsRef.current, ...enriched]);
         },
         []
@@ -55,8 +83,8 @@ const TransactionViewerComponent: React.FC = () => {
                 onLoad={handleNewData}
                 year={year}
                 month={month}
-                setYear={setYear}
-                setMonth={setMonth}
+                setYear={handleSetYear}
+                setMonth={handleSetMonth}
             />
 
             <SummaryComponent

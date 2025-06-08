@@ -37,7 +37,10 @@ const SummaryComponent: React.FC<SummaryComponentProps> = ({transactions, onCate
             {showIncomes && (
                 <>
                     <IncomesComponent sumCalculation={setSumIncomes} year={year} month={month}/>
-                    <MonthlySummaryComponent sumIncomes={sumIncomes} sumConstantTransactions={sumConstantTransactions} sumChangingTransactions={sumChangingTransactions} />
+                    { sumIncomes && sumConstantTransactions && sumChangingTransactions ?
+                        <MonthlySummaryComponent sumIncomes={sumIncomes} sumConstantTransactions={sumConstantTransactions} sumChangingTransactions={sumChangingTransactions} />
+                        : <></>
+                    }
                 </>
             )}
         </div>
