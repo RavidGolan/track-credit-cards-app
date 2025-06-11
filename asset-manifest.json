@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/track-credit-cards-app/static/css/main.636ca272.css",
+    "main.js": "/track-credit-cards-app/static/js/main.5f30f506.js",
+    "static/js/952.ce58d5b6.chunk.js": "/track-credit-cards-app/static/js/952.ce58d5b6.chunk.js",
+    "static/js/453.5112912a.chunk.js": "/track-credit-cards-app/static/js/453.5112912a.chunk.js",
+    "index.html": "/track-credit-cards-app/index.html",
+    "main.636ca272.css.map": "/track-credit-cards-app/static/css/main.636ca272.css.map",
+    "main.5f30f506.js.map": "/track-credit-cards-app/static/js/main.5f30f506.js.map",
+    "952.ce58d5b6.chunk.js.map": "/track-credit-cards-app/static/js/952.ce58d5b6.chunk.js.map",
+    "453.5112912a.chunk.js.map": "/track-credit-cards-app/static/js/453.5112912a.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.636ca272.css",
+    "static/js/main.5f30f506.js"
+  ]
+}
