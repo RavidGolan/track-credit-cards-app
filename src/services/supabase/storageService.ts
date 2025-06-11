@@ -32,6 +32,27 @@ export const StorageService = {
 
         return [];*/
 
+        const blob = await this.getExcelFileFromStorage(path);
+
+        const arrayBuffer = await blob.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(sheet);
+        console.log(jsonData);
+        return jsonData; // ✅ this is your AG Grid rowData
+    },
+
+    async getExcelFileFromStorage(path: string): Promise<Blob> {
+        /*        const { data, error } = await supabase.storage
+                    .from('excel-files')
+                    .list('2025/04');
+
+                console.log(data); // will show all files in that folder
+                console.log(error);
+
+                return [];*/
+
         const { data: blob, error } = await supabase.storage
             .from(BUCKET_NAME)
             .download(path);
@@ -41,13 +62,7 @@ export const StorageService = {
             throw error;
         }
 
-        const arrayBuffer = await blob.arrayBuffer();
-        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-        const sheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[sheetName];
-        const jsonData = XLSX.utils.sheet_to_json(sheet);
-        console.log(jsonData);
-        return jsonData; // ✅ this is your AG Grid rowData
+        return blob;
     },
 
     async getAvailableYearsAndMonths(): Promise<Record<string, string[]>> {

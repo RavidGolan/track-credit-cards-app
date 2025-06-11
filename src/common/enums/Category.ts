@@ -25,5 +25,7 @@ export enum Category {
     ITURAN = 'איתוראן',
     REFAUND = 'החזר',
     TRANSFERS = 'העברות',
-    CAR_MAINTENANCE = 'טיפולי רכב'
+    CAR_MAINTENANCE = 'טיפולי רכב',
+    ENTERTAINMENT = 'בילויים',
+    FEES = 'עמלות'
 }
